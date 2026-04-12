@@ -417,12 +417,12 @@ const RUNTIME_ENV: Record<string, string> = (() => {
     return {};
   }
 })();
-const SUPABASE_URL = RUNTIME_ENV.VITE_SUPABASE_URL || "";
-const SUPABASE_ANON_KEY = RUNTIME_ENV.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "";
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
 const SUPABASE_TABLE = "quiz_attempts";
 const SUPABASE_EXAM_CODE_TABLE = "exam_access_codes";
 const SUPABASE_ENABLED = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
-const TEACHER_ACCESS_PASSWORD = RUNTIME_ENV.VITE_TEACHER_PASSWORD || "";
+const TEACHER_ACCESS_PASSWORD = import.meta.env.VITE_TEACHER_PASSWORD ?? "";
 const TEACHER_SESSION_KEY = "teams-testing-app-teacher-access";
 const STUDENT_SESSION_KEY = "teams-testing-app-student-session";
 
