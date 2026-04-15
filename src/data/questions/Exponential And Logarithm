@@ -1,0 +1,25 @@
+
+import type { RawQuestionRow } from "./types";
+
+export const exponentialAndLogarithmQuestions: RawQuestionRow[] = [
+  [32, 32, "Exponential And Logarithm", "A sequence of positive integers {Uₙ} is defined by 𝑈ₙ = 3(1/2)ⁿ−1. The 10𝑡ℎ term of the sequence is given by:", "19683/512", "3/256", "3/512", "3/1000"],
+  [33, 33, "Exponential And Logarithm", "Given that 2 × 4^(𝑥 + 1) = 16^(2𝑥), the value of x is", "−1", "1/4", "1/3", "½"],
+  [34, 34, "Exponential And Logarithm", "The (√(2 × 4^𝑚))^1/n is equal to", "(√8^𝑚)^1/n", "2^(𝑛 + 2𝑚)", "2^(𝑛 + 𝑛𝑚)", "2^((2𝑚 + 1)/𝑛)"],
+  [35, 35, "Exponential And Logarithm", "n(√(3 × 27^𝑚)) is equal to", "3^((3𝑚+1)/𝑛)", "3^(𝑛 +3𝑚)", "n(√(81^3𝑚))", "3^4𝑚"],
+  [36, 36, "Exponential And Logarithm", "Given that 𝑙𝑜𝑔₂ 𝑥 + 𝑙𝑜𝑔₂ (6𝑥 + 1) = 1, the value of 𝑥 is", "−2/3", "1/2", "2/3", "3/2"],
+  [37, 37, "Exponential And Logarithm", "The value of 𝑙𝑜𝑔₄(8) − 𝑙𝑜𝑔₄(2) + 𝑙𝑜𝑔₄(1/16) is", "−1", "1/2", "3", "4"],
+  [38, 38, "Exponential And Logarithm", "The value of 2^𝑧 where 𝑧 = 5 + 𝑙𝑜𝑔₂ 3 is", "𝑙𝑜𝑔₂ 96", "25", "96", "296"],
+  [39, 39, "Exponential And Logarithm", "2^(−1)/8^(1/3) simplifies to", "1/2", "√2", "1/4", "1/(√2)"],
+  [40, 40, "Exponential And Logarithm", "The value of x for which 4^(𝑥+1) = 2 is", "−1/2", "0", "1/2", "1"],
+  [41, 41, "Exponential And Logarithm", "Given that log𝑝𝑋= 6 and log𝑝𝑌= 4, the value of log𝑝(𝑋𝑌) is", "10", "log𝑝2", "log𝑝6/log𝑝4", "2"],
+  [42, 42, "Exponential And Logarithm", "Given that 𝑙𝑜𝑔₂(𝑥³) = 6, then the value of x is", "2", "4", "8", "64"],
+  [43, 43, "Exponential And Logarithm", "Given that 3 × 27^(2𝑥)= 9𝑥, the value of x is", "− 1/4", "−1", "1/4", "1"],
+  [44, 44, "Exponential And Logarithm", "𝑙𝑜𝑔₃(2𝑥 + 1) = 2 + 𝑙𝑜𝑔₃(3𝑥 − 11) is", "5", "23/4", "4", "67/16"],
+  [45, 45, "Exponential And Logarithm", "The value of x for which 9^(𝑥+1) = 3 is", "−3/2", "−1/2", "3/2", "5/2"],
+  [46, 46, "Exponential And Logarithm", "The value of x for which 3^(𝑥+2) + 3^𝑥= 90 is", "½(log(90)/log(3)) − 2))", "2", "44", "(log(10)/log(3))"],
+  [47, 47, "Exponential And Logarithm", "The value of x such that 𝑙𝑜𝑔₂(5𝑥 + 1) − 𝑙𝑜𝑔₂(3𝑥 − 5) = 2 is", "2", "3", "5", "11"],
+  [48, 48, "Exponential And Logarithm", `Which of the following mathematical statements are true?
+𝐼. 𝑙𝑜𝑔ₐ(𝑃𝑄) = 𝑙𝑜𝑔ₐ𝑃 × 𝑙𝑜𝑔ₐ𝑄
+𝐼𝐼. 𝑙𝑜𝑔ₐ (𝑃/𝑄) = 𝑙𝑜𝑔ₐ𝑃 − 𝑙𝑜𝑔ₐ𝑄
+𝐼𝐼𝐼. 𝑙𝑜𝑔ₐ(𝑃ᵇ) = 𝑏 𝑙𝑜𝑔ₐ𝑃`, "I and II only", "I and III only", "II and III only", "I, II and III"],
+];
