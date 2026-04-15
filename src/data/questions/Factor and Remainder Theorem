@@ -1,1 +1,14 @@
 
+import type { RawQuestionRow } from "./types";
+
+export const factorRemainderTheoremQuestions: RawQuestionRow[] = [
+  [6, 6, "Factor/Remainder Theorem", "Given that 𝑓(𝑥) = 𝑥³ + 2𝑥² − 5𝑥 + 𝑘, and that 𝑥 − 2 is a factor of 𝑓(𝑥) then k is equal to", "-6", "-2", "2", "6"],
+  [7, 7, "Factor/Remainder Theorem", "The expression 𝑥 − 2 is a factor of", "4𝑥⁴ − 2𝑥² − 56", "4𝑥³ + 2𝑥² − 16", "2𝑥³ + 2𝑥² − 4𝑥 − 8", "3𝑥⁴ − 10𝑥³ − 5𝑥 + 4"],
+  [8, 8, "Factor/Remainder Theorem", "When 𝑥³ − 7𝑥² + 2𝑥 − 1 is divided by 𝑥 + 2, the quotient is", "−17", "−39", "𝑥² − 5𝑥 − 8", "𝑥² − 9𝑥 + 20"],
+  [9, 9, "Factor/Remainder Theorem", "The expression 𝑥 − 2 is a factor of", "4𝑥⁴ − 2𝑥² − 56", "4𝑥³ + 2𝑥² − 16", "2𝑥³ + 2𝑥² − 4𝑥 − 8", "3𝑥⁴ − 10𝑥³ − 5𝑥² + 4"],
+  [10, 10, "Factor/Remainder Theorem", "Given that 𝑥 + 2 is a factor of 𝑓(𝑥) = 2𝑥³ − 3𝑥² − 5𝑥 + 𝑝 then p is equal to", "−18", "-2", "18", "33"],
+  [11, 11, "Factor/Remainder Theorem", "2𝑥³ + 𝑥² − 7𝑥 − 6 factorizes completely as", "(𝑥 + 2)(𝑥 − 1)(2𝑥 − 3)", "(𝑥 − 2)(𝑥 − 1)(2𝑥 + 3)", "(𝑥 − 2)(𝑥 + 1)(2𝑥 − 3)", "(𝑥 − 2)(𝑥 + 1)(2𝑥 + 3)"],
+  [12, 12, "Factor/Remainder Theorem", "When 2𝑥³ + 3𝑥² − 2𝑥 + 3 is divided by 2𝑥 − 1, the remainder is", "0", "1/2", "3", "6"],
+  [13, 13, "Factor/Remainder Theorem", "The function 𝑓(𝑥) = 2𝑥³ − 𝑥² + ℎ𝑥 − 6 can be expressed as 𝑓(𝑥) = (2𝑥 + 1)(𝑥 + 2)(𝑥 − 3). What is the value of h?", "−13", "−12", "7", "13"],
+  [14, 14, "Factor/Remainder Theorem", "The linear factor of 𝑥³ − 3𝑥² − 3𝑥 − 4 is", "𝑥 − 1", "𝑥 − 2", "𝑥 + 2", "𝑥 − 4"],
+];
