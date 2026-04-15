@@ -7,7 +7,11 @@ function ParentPanel() {
 
   const summary = useMemo(() => {
     const total = matchedAttempts.length;
-    const average = total ? Math.round(matchedAttempts.reduce((sum, attempt) => sum + attempt.percentage, 0) / total) : 0;
+    const average = total
+      ? Math.round(
+          matchedAttempts.reduce((sum, attempt) => sum + attempt.percentage, 0) / total
+        )
+      : 0;
     const best = total ? Math.max(...matchedAttempts.map((attempt) => attempt.percentage)) : 0;
     return { total, average, best };
   }, [matchedAttempts]);
@@ -34,7 +38,11 @@ function ParentPanel() {
           const nameMatch = name ? attemptName.includes(name) : true;
           return emailMatch && nameMatch;
         })
-        .sort((a, b) => new Date(b.submittedAt || b.startedAt).getTime() - new Date(a.submittedAt || a.startedAt).getTime());
+        .sort(
+          (a, b) =>
+            new Date(b.submittedAt || b.startedAt).getTime() -
+            new Date(a.submittedAt || a.startedAt).getTime()
+        );
 
       setMatchedAttempts(filtered);
       setMessage(filtered.length ? "" : "No submitted quiz results were found for those details yet.");
@@ -60,7 +68,9 @@ function ParentPanel() {
         <Card className="relative z-10 rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
           <CardHeader>
             <CardTitle className="text-xl">Parent view</CardTitle>
-            <CardDescription>Look up a student's completed quizzes to see scores, feedback, and progress updates.</CardDescription>
+            <CardDescription>
+              Look up a student's completed quizzes to see scores, feedback, and progress updates.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -72,6 +82,7 @@ function ParentPanel() {
                 placeholder="Enter the student's email"
               />
             </div>
+
             <div className="space-y-2">
               <Label>Student name</Label>
               <Input
@@ -81,13 +92,28 @@ function ParentPanel() {
               />
             </div>
 
-            {message ? <div className="rounded-sm border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">{message}</div> : null}
+            {message ? (
+              <div className="rounded-sm border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                {message}
+              </div>
+            ) : null}
 
             <div className="relative z-10 flex flex-wrap gap-2 pointer-events-auto">
-              <Button type="button" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)] pointer-events-auto" onClick={() => void loadParentResults()} disabled={loading}>
+              <Button
+                type="button"
+                className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)] pointer-events-auto"
+                onClick={() => void loadParentResults()}
+                disabled={loading}
+              >
                 {loading ? "Loading..." : "View student results"}
               </Button>
-              <Button type="button" variant="outline" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)] pointer-events-auto" onClick={clearLookup}>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)] pointer-events-auto"
+                onClick={clearLookup}
+              >
                 Clear
               </Button>
             </div>
@@ -113,7 +139,7 @@ function ParentPanel() {
       </div>
 
       {matchedAttempts.length > 0 ? (
-        <Fragment>
+        <>
           <div className="grid gap-4 md:grid-cols-3">
             <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
               <CardContent className="p-5">
@@ -121,12 +147,14 @@ function ParentPanel() {
                 <div className="mt-2 text-3xl font-bold">{summary.total}</div>
               </CardContent>
             </Card>
+
             <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
               <CardContent className="p-5">
                 <div className="text-sm text-slate-500">Average score</div>
                 <div className="mt-2 text-3xl font-bold">{summary.average}%</div>
               </CardContent>
             </Card>
+
             <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
               <CardContent className="p-5">
                 <div className="text-sm text-slate-500">Best score</div>
@@ -137,7 +165,10 @@ function ParentPanel() {
 
           <div className="space-y-4">
             {matchedAttempts.map((attempt) => (
-              <Card key={attempt.id} className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+              <Card
+                key={attempt.id}
+                className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]"
+              >
                 <CardHeader>
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -148,13 +179,17 @@ function ParentPanel() {
                         {attempt.submittedAt ? ` · Submitted ${new Date(attempt.submittedAt).toLocaleString()}` : ""}
                       </CardDescription>
                     </div>
+
                     <div className="flex flex-wrap gap-2">
                       <Badge>{attempt.mode}</Badge>
                       <Badge variant="secondary">{attempt.percentage}%</Badge>
-                      <Badge variant={attempt.integrityEvents.length ? "destructive" : "outline"}>{attempt.integrityEvents.length} flags</Badge>
+                      <Badge variant={attempt.integrityEvents.length ? "destructive" : "outline"}>
+                        {attempt.integrityEvents.length} flags
+                      </Badge>
                     </div>
                   </div>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
                   <div className="grid gap-3 md:grid-cols-3">
                     <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
@@ -163,10 +198,14 @@ function ParentPanel() {
                         {`${attempt.score}/${attempt.questionCount || attempt.questions.length}`}
                       </div>
                     </div>
+
                     <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
                       <div className="text-slate-500">Topics</div>
-                      <div className="mt-1 font-medium text-slate-900">{attempt.selectedTopics.join(", ")}</div>
+                      <div className="mt-1 font-medium text-slate-900">
+                        {attempt.selectedTopics.join(", ")}
+                      </div>
                     </div>
+
                     <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
                       <div className="text-slate-500">Questions</div>
                       <div className="mt-1 font-medium text-slate-900">{attempt.questionCount}</div>
@@ -175,7 +214,11 @@ function ParentPanel() {
 
                   <div className="rounded-sm border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
                     <div className="font-medium text-slate-900">Teacher feedback</div>
-                    <div className="mt-2">{attempt.teacherFeedback?.trim() ? attempt.teacherFeedback : "No teacher feedback has been added yet."}</div>
+                    <div className="mt-2">
+                      {attempt.teacherFeedback?.trim()
+                        ? attempt.teacherFeedback
+                        : "No teacher feedback has been added yet."}
+                    </div>
                   </div>
 
                   {attempt.integrityEvents.length > 0 ? (
@@ -183,7 +226,9 @@ function ParentPanel() {
                       <div className="font-medium">Integrity notes</div>
                       <div className="mt-2 space-y-1">
                         {attempt.integrityEvents.map((event, index) => (
-                          <div key={`${event.at}-${index}`}>• {summarizeIntegrity(event.type)} — {event.details}</div>
+                          <div key={`${event.at}-${index}`}>
+                            • {summarizeIntegrity(event.type)} — {event.details}
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -192,7 +237,7 @@ function ParentPanel() {
               </Card>
             ))}
           </div>
-        </Fragment>
+        </>
       ) : null}
     </div>
   );
