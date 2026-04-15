@@ -1,4 +1,3 @@
-
 import type { RawQuestionRow } from "./types";
 
 export const calculusQuestions: RawQuestionRow[] = [
