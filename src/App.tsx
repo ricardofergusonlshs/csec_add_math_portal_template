@@ -1,3 +1,8 @@
+import React, { Fragment, createContext, forwardRef, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import katex from "katex";
+import "katex/dist/katex.min.css";
+
 function ParentPanel() {
   const [lookupEmail, setLookupEmail] = useState("");
   const [lookupName, setLookupName] = useState("");
@@ -228,6 +233,10 @@ function ParentPanel() {
                         {attempt.integrityEvents.map((event, index) => (
                           <div key={`${event.at}-${index}`}>
                             • {summarizeIntegrity(event.type)} — {event.details}
+                            
+                            export default function App() {
+  ...
+}
                           </div>
                         ))}
                       </div>
