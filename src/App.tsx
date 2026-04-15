@@ -237,12 +237,12 @@ type StudentAuthSession = {
 };
 
 const ANSWERS_VISIBLE_ONLY_AFTER_SUBMIT = true;
-const PROFESSIONAL_EQUATION_RENDERING = true;
+const PROFESSIONAL_EQUATION_RENDERING = false;
 
 const RAW_QUESTION_BANK: [number, number, string, string, string, string, string, string][] = [[1, 1, "Factorization", "𝑎(𝑏 + 𝑐) − 𝑏(𝑎 + 𝑐) is equal to", "𝑎(𝑐 − 𝑏)", "𝑎(𝑏 − 𝑐)", "𝑐(𝑎 − 𝑏)", "𝑐(𝑏 − 𝑎)"], 
 [2, 2, "Factorization", "The expression ab + 3c − 3b − ac is equal to", "(𝑎 + 3)(𝑐 − 𝑏)", "(𝑎 + 3)(𝑏 − 𝑐)", "(𝑎 − 3)(𝑏 + 𝑐)", "(𝑎 − 3)(𝑏 − 𝑐)"], 
 [3, 3, "Factorization", "The expression ab + 3c − 3b − ac is equal to", "(𝑎 + 3)(𝑐 − 𝑏)", "(𝑎 + 3)(𝑏 − 𝑐)", "(𝑎 − 3)(𝑏 − 𝑐)", "(𝑎 − 3)(𝑏 + 𝑐)"], 
-[4, 4, "Factorization", "1 /(𝑥 + 3) + 3 /(𝑥² − 9) expressed as a single fraction is:", "𝑥 /(𝑥² − 9)", "(𝑥² − 6 (𝑥² − 9)(𝑥 + 3)", "(𝑥 + 6)/(𝑥² − 9)", "4 𝑥 + 3"], 
+[4, 4, "Factorization", "1/(𝑥 + 3) + 3/(𝑥² − 9) expressed as a single fraction is:", "𝑥/(𝑥² − 9)", "(𝑥² − 6)/(𝑥² − 9)(𝑥 + 3)", "(𝑥 + 6)/(𝑥² − 9)", "4/(𝑥 + 3)"], 
 [5, 5, "Factorization", "The expression 𝑝𝑞 + 5𝑟 − 5𝑞 − 𝑝𝑟 is equal to", "(𝑝 − 5)(𝑞 − 𝑟)", "(𝑝 + 5)(𝑟 − 𝑞)", "(𝑝 + 5)(𝑞 − 𝑟)", "(𝑝 − 5)(𝑞 + 𝑟)"], 
 [6, 6, "Factor/Remainder Theorem", "Given that 𝑓(𝑥) = 𝑥³ + 2𝑥² − 5𝑥 + 𝑘, and that 𝑥 − 2 is a factor of 𝑓(𝑥) then k is equal to", "-6", "-2", "2", "6"], 
 [7, 7, "Factor/Remainder Theorem", "The expression 𝑥 − 2 is a factor of", "4𝑥⁴ − 2𝑥² − 56", "4𝑥³ + 2𝑥² − 16", "2𝑥³ + 2𝑥² − 4𝑥 − 8", "3𝑥⁴ − 10𝑥³ − 5𝑥 + 4"], 
@@ -268,25 +268,28 @@ const RAW_QUESTION_BANK: [number, number, string, string, string, string, string
 [27, 27, "Arithmetic And Geometric Sequence", "Which of the following is NOT an arithmetic sequence?", "11, 2, −8, −19, ...", "8, 12, 16, 20, ...", "51, 45, 39, 33, ...", "−7, −9, −11, −13, ..."], 
 [28, 28, "Arithmetic And Geometric Sequence", "The series −2 + 4/3 − 8/9 + … converges to the limit", "−6", "6", "−6/5", "6/5"], 
 [29, 29, "Arithmetic And Geometric Sequence", "The sum of the first n terms of a geometric series is Sₙ = 4ⁿ − 1. For this series, which statements are correct? I. The common ratio is 4. II. The first 3 terms are 3, 15 and 63. III. S₂ₙ = 2⁴ⁿ − 1.", "I and II only", "I and III only", "II and III only", "I, II and III"], 
-[30, 30, "Exponential And Logarithm", "The sum of ∑(1/𝑘), from 𝑘 = 1 to 3, is", "1/3", "1/2", "3/5", "11/6"], 
-[31, 31, "Exponential And Logarithm", "The sum of the first n terms of a series is given by: ∑(5 − 3𝑟), from 𝑟 = 1 to 𝑛. The sum of the first 10 terms is", "-170", "-125", "-115", "-85"], 
-[32, 32, "Exponential And Logarithm", "A sequence of positive integers {Uₙ} is defined by 𝑈ₙ = 3(1/2)ⁿ−1. The 10𝑡ℎ term of the sequence is given by:", "19683/512", "3/256", "3/512", "3 1000 EXPONENTIAl & LOGARITHM"], 
+[30, 30, "Arithmetic And Geometric Sequence", "The sum of ∑(1/𝑘), from 𝑘 = 1 to 3, is", "1/3", "1/2", "3/5", "11/6"], 
+[31, 31, "Arithmetic And Geometric Sequence", "The sum of the first n terms of a series is given by: ∑(5 − 3𝑟), from 𝑟 = 1 to 𝑛. The sum of the first 10 terms is", "-170", "-125", "-115", "-85"], 
+[32, 32, "Exponential And Logarithm", "A sequence of positive integers {Uₙ} is defined by 𝑈ₙ = 3(1/2)ⁿ−1. The 10𝑡ℎ term of the sequence is given by:", "19683/512", "3/256", "3/512", "3/1000"], 
 [33, 33, "Exponential And Logarithm", "Given that 2 × 4^(𝑥 + 1) = 16^(2𝑥), the value of x is", "−1", "1/4", "1/3", "½"], 
-[34, 34, "Exponential And Logarithm", "The √2 × 4^(𝑚/𝑛) is equal to", "√8𝑚 𝑛", "2𝑛 + 2𝑚", "2𝑛 + 𝑛𝑚", "2 2𝑚 + 1 𝑛"], 
-[35, 35, "Exponential And Logarithm", "√3 × 27^𝑚 is equal to", "3 3𝑚+1 𝑛", "3𝑛 +3𝑚", "√813𝑚 𝑛", "34𝑚"], 
+[34, 34, "Exponential And Logarithm", "The n(√(2 × 4^𝑚)) is equal to", "n(√8^𝑚)", "2^(𝑛 + 2𝑚)", "2^(𝑛 + 𝑛𝑚)", "2^((2𝑚 + 1)/𝑛)"], 
+[35, 35, "Exponential And Logarithm", "n(√(3 × 27^𝑚)) is equal to", "3^((3𝑚+1)/𝑛)", "3^(𝑛 +3𝑚)", "n(√(81^3𝑚))", "3^4𝑚"], 
 [36, 36, "Exponential And Logarithm", "Given that 𝑙𝑜𝑔₂ 𝑥 + 𝑙𝑜𝑔₂ (6𝑥 + 1) = 1, the value of 𝑥 is", "−2/3", "1/2", "2/3", "3/2"], 
 [37, 37, "Exponential And Logarithm", "The value of 𝑙𝑜𝑔₄(8) − 𝑙𝑜𝑔₄(2) + 𝑙𝑜𝑔₄(1/16) is", "−1", "1/2", "3", "4"], 
 [38, 38, "Exponential And Logarithm", "The value of 2^𝑧 where 𝑧 = 5 + 𝑙𝑜𝑔₂ 3 is", "𝑙𝑜𝑔₂ 96", "25", "96", "296"], 
-[39, 39, "Exponential And Logarithm", "2^(−1/8) 1/3 simplifies to", "1/2", "√2", "1/4", "1 √2"], 
+[39, 39, "Exponential And Logarithm", "2^(−1)/8^(1/3) simplifies to", "1/2", "√2", "1/4", "1/(√2)"], 
 [40, 40, "Exponential And Logarithm", "The value of x for which 4^(𝑥+1) = 2 is", "−1/2", "0", "1/2", "1"], 
-[41, 41, "Exponential And Logarithm", "Given that log𝑝𝑋= 6 and log𝑝𝑌= 4, the value of log𝑝( 𝑋 𝑌) is", "10", "𝑙𝑜𝑔𝑝2", "log𝑝6 log𝑝4", "2"], 
+[41, 41, "Exponential And Logarithm", "Given that log𝑝𝑋= 6 and log𝑝𝑌= 4, the value of log𝑝(𝑋𝑌) is", "10", "log𝑝2", "log𝑝6/log𝑝4", "2"], 
 [42, 42, "Exponential And Logarithm", "Given that 𝑙𝑜𝑔₂(𝑥³) = 6, then the value of x is", "2", "4", "8", "64"], 
 [43, 43, "Exponential And Logarithm", "Given that 3 × 27^(2𝑥)= 9𝑥, the value of x is", "− 1/4", "−1", "1/4", "1"], 
 [44, 44, "Exponential And Logarithm", "𝑙𝑜𝑔₃(2𝑥 + 1) = 2 + 𝑙𝑜𝑔₃(3𝑥 − 11) is", "5", "23/4", "4", "67/16"], 
 [45, 45, "Exponential And Logarithm", "The value of x for which 9^(𝑥+1) = 3 is", "−3/2", "−1/2", "3/2", "5/2"], 
-[46, 46, "Exponential And Logarithm", "The value of x for which 3^(𝑥+2) + 3^𝑥= 90 is", "½ ( log(90) log(3) − 2 )", "2", "44", "( log(10) log(3) )"], 
+[46, 46, "Exponential And Logarithm", "The value of x for which 3^(𝑥+2) + 3^𝑥= 90 is", "½(log(90)/log(3)) − 2))", "2", "44", "(log(10)/log(3))"], 
 [47, 47, "Exponential And Logarithm", "The value of x such that 𝑙𝑜𝑔₂(5𝑥 + 1) − 𝑙𝑜𝑔₂(3𝑥 − 5) = 2 is", "2", "3", "5", "11"], 
-[48, 48, "Exponential And Logarithm", "Which of the following mathematical statements are true? 𝐼. 𝑙𝑜𝑔ₐ(𝑃𝑄) = 𝑙𝑜𝑔ₐ𝑃 × 𝑙𝑜𝑔ₐ𝑄 𝐼𝐼. 𝑙𝑜𝑔ₐ (𝑃/𝑄) = 𝑙𝑜𝑔ₐ𝑃 − 𝑙𝑜𝑔ₐ𝑄 𝐼𝐼𝐼. 𝑙𝑜𝑔ₐ(𝑃ᵇ) = 𝑏 𝑙𝑜𝑔ₐ𝑃", "I and II only", "I and III only", "II and III only", "I, II and III"], 
+[48, 48, "Exponential And Logarithm", "Which of the following mathematical statements are true? 
+𝐼. 𝑙𝑜𝑔ₐ(𝑃𝑄) = 𝑙𝑜𝑔ₐ𝑃 × 𝑙𝑜𝑔ₐ𝑄 
+𝐼𝐼. 𝑙𝑜𝑔ₐ (𝑃/𝑄) = 𝑙𝑜𝑔ₐ𝑃 − 𝑙𝑜𝑔ₐ𝑄 
+𝐼𝐼𝐼. 𝑙𝑜𝑔ₐ(𝑃ᵇ) = 𝑏 𝑙𝑜𝑔ₐ𝑃", "I and II only", "I and III only", "II and III only", "I, II and III"], 
 [49, 49, "Sum/Product Of Roots", "Given that a and b are the roots of the equation 𝑥² + 3𝑥 + 4 = 0, what is the value of (𝑎 + 𝑏)²?", "9/16", "1", "9", "16"], 
 [50, 50, "Sum/Product Of Roots", "A quadratic equation is such that the sum of its roots is −2/3 and the product of its roots is 3/4. The quadratic equation is:", "12x² + 8x + 9 = 0", "12x² − 8x − 9 = 0", "12x² − 8x + 9 = 0", "12x² + 8x − 9 = 0"], 
 [51, 51, "Sum/Product Of Roots", "The quadratic equation is:", "12𝑥² + 8𝑥 + 9 = 0", "12𝑥² − 8𝑥 − 9 = 0", "12𝑥² − 8𝑥 + 9 = 0", "12𝑥² + 8𝑥 − 9 = 0"], 
@@ -303,20 +306,20 @@ const RAW_QUESTION_BANK: [number, number, string, string, string, string, string
 [62, 62, "Maximum And Minimum Point", "Given that 𝑓(𝑥) = 6 − 𝑥 − 2𝑥² is less than or equal to k, where k ∈ ℝ, then k is equal to", "− 49/8", "− 1/4", "1/4", "49/8"], 
 [63, 63, "Maximum And Minimum Point", "If 𝑥² − 8𝑥 + 19 = 𝑎(𝑥 + ℎ)² + 𝑘, then", "𝑎 = 1 ℎ = 3 𝑘 = 4", "𝑎 = 1 ℎ = −3 𝑘 = 4", "𝑎 = 1 ℎ = −4 𝑘 = 3", "𝑎 = −1 ℎ = 4 𝑘 = 3"], 
 [64, 64, "Maximum And Minimum Point", "If 𝑥²− 6𝑥 + 13 = 𝑎(𝑥 + ℎ)² + 𝑘, then", "𝑎 = 1 ℎ = 3 𝑘 = 4", "𝑎 = 1 ℎ = −3 𝑘 = 4", "𝑎 = 1 ℎ = −4 𝑘 = 3", "𝑎 = −1 ℎ = 4 𝑘 = 3"], 
-[65, 65, "Maximum And Minimum Point", "Given that 𝑓(𝑥) = 𝑎𝑥² + 𝑏𝑥 + 𝑐, then 𝑓(𝑥) can be expressed in the form:", "𝑎(𝑥 + 𝑏/𝑎)² + (𝑎𝑐 – 𝑏²)/𝑎²", "𝑎 (𝑥 + 𝑏 2𝑎 )² + 𝑎𝑐 − 𝑏²/𝑎²", "𝑎 (𝑥 + 𝑏 2𝑎 )² + 4𝑎𝑐 − 𝑏²/4𝑎", "𝑎 (𝑥 + 𝑏 2𝑎 )² + 4𝑎𝑐 − 𝑏²/4𝑎²"], 
+[65, 65, "Maximum And Minimum Point", "Given that 𝑓(𝑥) = 𝑎𝑥² + 𝑏𝑥 + 𝑐, then 𝑓(𝑥) can be expressed in the form:", "𝑎(𝑥 + 𝑏/𝑎)^2 + (𝑎𝑐 – 𝑏^2)/𝑎^2", "𝑎(𝑥 + 𝑏/2𝑎)^2 + (𝑎𝑐 − 𝑏^2)/𝑎^2", "𝑎(𝑥 + 𝑏/2𝑎)^2 + (4𝑎𝑐 − 𝑏^2)/4𝑎", "𝑎(𝑥 + 𝑏/2𝑎)^2 + (4𝑎𝑐 − 𝑏^2)/4𝑎²"], 
 [66, 66, "Maximum And Minimum Point", "Given that f(x) = 1 - 4x - 2x², the expression can be written in the form:", "2(𝑥 + 1)² − 3", "3 − 2(𝑥 − 1)²", "3 − 2(𝑥 + 1)²", "3 − (2𝑥 + 1)²"], 
-[67, 67, "Maximum And Minimum Point", "Which of the following graphs BEST represents 𝑓(𝑥) = 𝑥(1 − 𝑥)?", "Graph A", "Graph B", "Graph C", "Graph D"], 
-[68, 68, "Surd", "11. The expression (1 + √3) (√3 − 1) when simplified is equal to", "-1", "1", "√3+ 2/2", "√3 + 2"], 
+[67, 67, "Maximum And Minimum Point", "consider the function 𝑓(𝑥) = 𝑥(1 − 𝑥)?, Which of the following statements BEST describes the graph of this function?", "The graph is a straight line with a positive slope.", "The graph is a parabola opening upwards with a minimum point at x=1/2", "The graph is a parabola opening downwards with a maximum point at x=1/2", "The graph is a parabola opening downwards with no turning"], 
+[68, 68, "Surd", "The expression (1 + √3)/(√3 − 1) when simplified is equal to", "-1", "1", "(√3+ 2)/2", "√3 + 2"], 
 [69, 69, "Surd", "(8 + √5)(2 − √5) can be expressed as", "11 − 6√5", "21 − 6√5", "11 + 6√5", "11 + 10√5"], 
 [70, 70, "Surd", "The expression (√5− 1)/(1 + √5) when simplified is equal to", "1/3 (3 − √5)", "1/2 (√5 − 3)", "1/3 (√5 − 3)", "1/2 (3 − √5)"], 
 [71, 71, "Surd", "The expression (1 + √3)/(√3− 1) when simplified is equal to:", "-1", "1", "√3+ 2/2", "√3 + 2"], 
 [72, 72, "Surd", "The value of √18 + √50 is", "34√2", "6√15", "8√2", "√68"], 
 [73, 73, "Surd", "4/(√6− 2)", "2(√6 − 2)", "2(√6 + 2)", "√6 − 2", "√6 + 2"], 
 [74, 74, "Linear & Quadratic Inequality", "The range of values for which 2𝑥² < 5𝑥 + 3 𝑖𝑠", "−1/2 < 𝑥 < 3", "1/2 < 𝑥 < 3", "𝑥 < −1/2 𝑎𝑛𝑑 𝑥 < 3", "𝑥 > −1/2 𝑎𝑛𝑑 𝑥 > 3"], 
-[75, 75, "Linear & Quadratic Inequality", "20. The values of x which satisfy the inequality 2𝑥 – 3/𝑥 + 1 > 0 are", "𝑥 > −1 𝑎𝑛𝑑 𝑥 > 3/2", "𝑥 > 3/2", "𝑥 < −1 𝑜𝑟 𝑥 > 3/2", "𝑥 > −1"], 
+[75, 75, "Linear & Quadratic Inequality", "The values of x which satisfy the inequality (2𝑥 – 3)/(𝑥 + 1)> 0 are", "𝑥 > −1 𝑎𝑛𝑑 𝑥 > 3/2", "𝑥 > 3/2", "𝑥 < −1 𝑜𝑟 𝑥 > 3/2", "𝑥 > −1"], 
 [76, 76, "Linear & Quadratic Inequality", "The set of values of x for which 5𝑥 + 7 > 10𝑥 − 13 is", "𝑥 < −4", "𝑥 ≥ −4", "𝑥 < 4", "𝑥 > 4"], 
 [77, 77, "Linear & Quadratic Inequality", "The range of values of x for which 5𝑥 + 6 ≤ 𝑥² is", "{𝑥∶ −3 ≤ 𝑥 ≤ −2}", "{𝑥∶ 𝑥 ≤ −1} ∪ {𝑥∶ 𝑥 ≥ 6}", "{𝑥∶ 𝑥 ≥ −1} ∪ {𝑥∶ 𝑥 ≥ 6}", "{𝑥∶ −1 ≤ 𝑥 ≤ 6}"], 
-[78, 78, "Linear & Quadratic Inequality", "The range of values for which 𝑥² − 7𝑥 + 10 < 0 is", "2 > 𝑥 > 5", "2 < 𝑥 < 5", "𝑥 < 2 𝑎𝑛𝑑 𝑥 > 5", "𝑥 < −5 𝑎𝑛𝑑 𝑥 > −5 The set of values of x for which 3x + 2 > x − 2 is"], 
+[78, 78, "Linear & Quadratic Inequality", "The range of values for which 𝑥² − 7𝑥 + 10 < 0 is", "2 > 𝑥 > 5", "2 < 𝑥 < 5", "𝑥 < 2 𝑎𝑛𝑑 𝑥 > 5", "𝑥 < −5 𝑎𝑛𝑑 𝑥 > −5"], 
 [79, 79, "Linear & Quadratic Inequality", "The set of values of x for which (5x − 2)/(2 − 3x) ≥ 0 is given by:", "{x : x ≥ 2/5 ∪ x > 2/3}", "{x : x ≤ 2/5 ∪ x > 2/3}", "{x : 2/3 < x ≤ 2/5}", "{x : 2/5 ≤ x < 2/3}"], 
 [80, 80, "Linear & Quadratic Inequality", "Given that x > 0, the set of values of x for which 𝑥 – 2 < 15/𝑥 is:", "(A){𝑥∶ 𝑥 > 0 ∪ 𝑥 > 5}", "(B){𝑥∶ 0 < 𝑥 < 5}", "(C){𝑥∶ 𝑥 > 5}", "(D){𝑥∶ 𝑥 < 5}"], 
 [81, 81, "Linear & Quadratic Inequality", "The values of x for which (𝑥 + 15)² = 64𝑥 are", "3 𝑎𝑛𝑑 5", "9 𝑎𝑛𝑑 5", "3 𝑎𝑛𝑑 25", "9 𝑎𝑛𝑑 25"], 
@@ -327,35 +330,39 @@ const RAW_QUESTION_BANK: [number, number, string, string, string, string, string
 [86, 86, "Equation Of A Circle", "The coordinates of the points A and B are (2, -3) and (-10, -5) respectively. The perpendicular bisector to the line AB is given by the equation:", "𝑥 − 6𝑦 + 20 = 0", "6𝑥 + 𝑦 + 28 = 0", "𝑥 + 6𝑦 − 20 = 0", "6𝑥 + 𝑦 − 28 = 0"], 
 [87, 87, "Equation Of A Circle", "The coordinates of the centre of a circle with equation (𝑥 − 1)² + (𝑦 + 3)² = 36 is", "(1, −3)", "(−1, 3)", "(3, −1)", "(−3, 1)"], 
 [88, 88, "Equation Of A Circle", "A circle C has centre (3, -2) and radius 4. The equation of C is", "x^2 + y^2 + 6x - 4y + 3 = 0", "x^2 + y^2 - 3 = 0", "x^2 + y^2 - 6x + 4y - 3 = 0", "x^2 + y^2 + 3x - 2y - 3 = 0"], 
-[89, 89, "Vector", "If the length of the vector 𝑝 − 2𝑖 − 𝑘𝑗 is √13 and k is real, then\nI. k = 3\nII. k = −3\nIII. k = √17\nIV. k = −√17", "I or II only", "I or III only", "I or IV only", "II or IV only"], 
-[90, 90, "Vector", "25. The value of the real number r for which the two vectors 𝑎 = 4𝑖 + 𝑟𝑗 and 𝑏 = 2𝑖 − 3𝑗 are parallel is", "−6", "3/4", "4/3", "6"], 
-[91, 91, "Vector", "26. The position vectors of A and B relative to an origin O are( 2/3 ) and( 7/4 ) respectively. The acute angle AOB is given by", "𝑐𝑜𝑠 −1 ( 2 √65 )", "𝑐𝑜𝑠 −1 ( √26 (13√65) )", "𝑐𝑜𝑠 −1 ( √2 √65)", "𝑐𝑜𝑠 −1 ( 26 √13√65)"], 
+[89, 89, "Vector", `If the length of the vector 𝑝 − 2𝑖 − 𝑘𝑗 is √13 and k is real, then
+I. k = 3
+II. k = −3
+III. k = √17
+IV. k = −√17`, "I or II only", "I or III only", "I or IV only", "II or IV only"], 
+[90, 90, "Vector", "The value of the real number r for which the two vectors 𝑎 = 4𝑖 + 𝑟𝑗 and 𝑏 = 2𝑖 − 3𝑗 are parallel is", "−6", "3/4", "4/3", "6"], 
+[91, 91, "Vector", "The position vectors of A and B relative to an origin O are( 2/3 ) and( 7/4 ) respectively. The acute angle AOB is given by", "𝑐𝑜𝑠^−1 ( 2/√65 )", "𝑐𝑜𝑠^−1 ( √26/(13√65) )", "𝑐𝑜𝑠^−1 (√2/√65)", "𝑐𝑜𝑠^−1(26/√13√65)"], 
 [92, 92, "Vector", "The vector a is given as 5i + 12j. A unit vector parallel to a is", "15𝑖 + 36𝑗", "195𝑖 + 468𝑗", "1/13 (5𝑖 + 12𝑗)", "3/13 (5𝑖 + 12𝑗)"], 
-[93, 93, "Vector", "Given that OA = ( −17 25 ) and OB = ( 4 −5 ), the vector AB =", "( −13 30 )", "( −13 −20)", "( −21 20 )", "( 21 −20)"], 
-[94, 94, "Vector", "The position vectors of A and B relative to an origin O are ( 2/5 ) and ( −3/1 ) respectively. The acute angle AOB is given by", "𝑐𝑜𝑠⁻¹ ( 1 √290 )", "𝑐𝑜𝑠⁻¹ ( 11 √290 )", "𝑐𝑜𝑠⁻¹ ( √11 √290)", "𝑐𝑜𝑠⁻¹ (− 1 √290 )"], 
+[93, 93, "Vector", "Given that OA = (■(-17@25)) and OB = (■(4@-5)), the vector AB =", "(■(-13@30))", "(■(-13@-20))", "(■(-21@20))", "(■(21@-20))"], 
+[94, 94, "Vector", "The position vectors of A and B relative to an origin O are ( 2/5 ) and ( −3/1 ) respectively. The acute angle AOB is given by", "𝑐𝑜𝑠⁻¹ ( 1/√290 )", "𝑐𝑜𝑠⁻¹ ( 11/√290 )", "𝑐𝑜𝑠⁻¹ ( √11/√290)", "𝑐𝑜𝑠⁻¹ (− 1/√290 )"], 
 [95, 95, "Vector", "The triangle OAB has vertices given by( 0 0 ), ( 𝑎 0 ) and ( 0 4 ) respectively. Given that the angle AÔB is 𝜋/2 , then a =", "2", "3", "4", "6"], 
 [96, 96, "Vector", "The position vector of the point P relative to an origin O is given as p = 5i + 2j and the position vector of Q relative to an origin O is given as q = -4i + 10j. Which of the following is TRUE?", "p and q are parallel.", "p and q are perpendicular.", "The acute angle between p and q is 60°.", "The acute angle between p and q is 45°."], 
-[97, 97, "Trigonometry", "28. cos(A − B) − cos(A + B) =", "2 sin A sin B", "−2 sin A cos B", "2 cos A sin B", "2 cos A cos B"], 
-[98, 98, "Trigonometry", "29. If sin 𝜃= 15/17 and θ is obtuse, then cos θ is equal to", "−8/15", "−8/17", "8/15", "8/17"], 
+[97, 97, "Trigonometry", "cos(A − B) − cos(A + B) =", "2 sin A sin B", "−2 sin A cos B", "2 cos A sin B", "2 cos A cos B"], 
+[98, 98, "Trigonometry", "If sin 𝜃= 15/17 and θ is obtuse, then cos θ is equal to", "−8/15", "−8/17", "8/15", "8/17"], 
 [99, 99, "Trigonometry", "The smallest positive angle for which the equation 𝑠𝑖𝑛 𝜃 + 𝑐𝑜𝑠 𝜃 = 0 is", "𝜋/4", "3𝜋/4", "5𝜋/4", "7𝜋/4"], 
 [100, 100, "Trigonometry", "For 0 ≤ θ ≤ 2π, solutions for the equation 4 sin² θ − 1 = 0 exist in", "1, 2 and 3", "1, 3 and 4", "2, 3 and 4", "1, 2, 3 and 4"], 
 [101, 101, "Trigonometry", "2 sin (𝑥 − 𝜋/2)is equal to", "2 sin 𝑥− 2", "−2 cos 𝑥", "2 cos (𝑥 + 𝜋/2)", "2 sin 𝑥− 𝜋"], 
 [102, 102, "Trigonometry", "For which of the following ranges of values is 𝑓(𝑥) = 2 + 𝑐𝑜𝑠 3𝑥 valid?", "−1 ≤ 𝑓(𝑥) ≤ 3", "1 ≤ 𝑓(𝑥) ≤ 1", "−2 ≤ 𝑓(𝑥) ≤ 2", "0 ≤ 𝑓(𝑥) ≤ 2"], 
 [103, 103, "Trigonometry", "For 0 ≤ x ≤ 2π, the values of x which satisfy the equation 2 𝑐𝑜𝑠² 𝑥 + 3 𝑠𝑖𝑛 𝑥 = 0 are", "𝑥 = 𝜋/6 , 𝑥 = 5𝜋/6", "𝑥 = 𝜋/6 , 𝑥 = − 5𝜋/6", "𝑥 = 7𝜋/6 , 𝑥 = 11𝜋/6", "𝑥 = 5𝜋/6 , 𝑥 = 7𝜋/6"], 
 [104, 104, "Trigonometry", "If sin 𝜃= 5/13 and θ is obtuse, then tan θ =", "−12/13", "−5/12", "5/12", "12/13"], 
-[105, 105, "Trigonometry", "𝑜𝑠(A + B) + 𝑐𝑜𝑠(A − B) =", "2 cos A", "2 cos A + 2 cos B", "cos² A cos² B", "2 cos A cos B"], 
+[105, 105, "Trigonometry", "𝑜𝑠(A + B) + 𝑐𝑜𝑠(A − B) =", "2cosA", "2cosA + 2 cosB", "cos²A cos²B", "2cosAcosB"], 
 [106, 106, "Trigonometry", "If 𝑐𝑜𝑠 2𝑥 = 1 − 2𝑠², then sin x =", "s", "s²", "2s", "1 − s²"], 
 [107, 107, "Trigonometry", "The exact value of tan 150° is given by", "−1/√3", "1/√3", "−√3", "√3"], 
 [108, 108, "Trigonometry", "The graph of y = sin 2x is", "Graph A", "Graph B", "Graph C", "Graph D"], 
 [109, 109, "Trigonometry", "The SMALLEST positive angle for which the equation 𝑠𝑖𝑛 𝜃 − 𝑐𝑜𝑠 𝜃 = 0 𝑓𝑜𝑟 0 ≤ 𝜃 ≤ 2𝜋 is", "𝜋/6", "𝜋/4", "5𝜋/6", "2𝜋/3"], 
 [110, 110, "Trigonometry", "𝑠𝑖𝑛 (𝛼 + 45°) is equal to", "1/√2 (sin 𝛼+ cos 𝛼)", "1/√2 (cos 𝛼−sin 𝛼)", "1/2 (sin 𝛼−cos 𝛼)", "1/2 (cos 𝛼−sin 𝛼)"], 
 [111, 111, "Trigonometry", "Convert 4𝜋/5 radians into degrees.", "72", "144", "180", "288"], 
-[112, 112, "Trigonometry", "The trigonometrical expression 𝑆𝑖𝑛𝑥 1−𝑐𝑜𝑠𝑥− 𝑠𝑖𝑛𝑥 1+𝑐𝑜𝑠𝑥 is identical to", "2 sin 𝑥", "2 tan 𝑥", "2 sin 𝑥", "2 𝑡𝑎𝑛²𝑥"], 
+[112, 112, "Trigonometry", "The trigonometrical expression 𝑆𝑖𝑛𝑥/(1 − 𝑐𝑜𝑠𝑥)− 𝑠𝑖𝑛𝑥/(1 + 𝑐𝑜𝑠𝑥) is identical to", "2sin𝑥", "2tan𝑥", "2/sin 𝑥", "2/𝑡𝑎𝑛²𝑥"], 
 [113, 113, "Trigonometry", "The EXACT value of cos ( 5𝜋/12) is:", "1/4 (√6 − √2)", "1/4 (√6 + √2)", "1/2 (√6 + √2)", "1/2 (√6 − √2)"], 
 [114, 114, "Trigonometry", "The graph shown represents the function:", "𝑐𝑜𝑠 𝑥", "𝑐𝑜𝑠 2𝑥", "1/2 cos 𝑥", "𝑐𝑜𝑠(1/2 𝑥)"], 
 [115, 115, "Trigonometry", "𝑠𝑖𝑛 50° 𝑐𝑜𝑠 40° − 𝑐𝑜𝑠 50° 𝑠𝑖𝑛 40° =", "sin 10°", "cos 10°", "sin 90°", "cos 90°"], 
 [116, 116, "Trigonometry", "The size of angle x, measured in radians, is:", "𝜋/12", "𝜋/9", "𝜋/6", "𝜋/3"], 
-[117, 117, "Trigonometry", "sin ( 𝜋/2 − 𝑥) + cos (𝑥 + 𝜋/2) =", "tan 𝜋", "sin 𝑥−cos 𝑥", "cos 𝑥−sin 𝑥", "1 −sin 𝑥−cos 𝑥"], 
+[117, 117, "Trigonometry", "sin(𝜋/2 − 𝑥) + cos(𝑥 + 𝜋/2) =", "tan𝜋", "sin𝑥 − cos𝑥", "cos𝑥 − sin𝑥", "1 − sin𝑥 − cos𝑥"], 
 [118, 118, "Trigonometry", "If 𝑠𝑖𝑛(90° − 𝑥) = 𝑐𝑜𝑠 𝑥, then the value of 𝑥 is:", "35°", "45°", "60°", "70°"], 
 [119, 119, "Radian", "If the area of the semicircle is 32π, what is the length of the arc connecting points A and B?", "4π", "8π", "16π", "32π"], 
 [120, 120, "Coordinate Geometry", "The coordinates of the points A and B are (2, −3) and (−10, −5) respectively. The perpendicular bisector to the line AB is given by the equation", "𝑥 − 6𝑦 + 20 = 0", "6𝑥 + 𝑦 + 28 = 0", "𝑥 + 6𝑦 − 20 = 0", "6𝑥 + 𝑦 − 28 = 0"], 
@@ -365,35 +372,34 @@ const RAW_QUESTION_BANK: [number, number, string, string, string, string, string
 [124, 124, "Coordinate Geometry", "The line through the points Q(h, 2) and R(4, 8) is parallel to the line with equation 2𝑥 + 𝑦 − 10 = 0. The value of h is:", "-7", "2", "1", "7"], 
 [125, 125, "Coordinate Geometry", "The line 𝑥 + 𝑦 = 1 and the circle 𝑥² + 𝑦² = 5 intersect at the points:", "(2, 1) and (1, 2)", "(−1, 2) and (2, −1)", "(1, −2) and (−2, −1)", "(−1, −2) and (−2, −1)"], 
 [126, 126, "Calculus", "Given that 𝑦 = (3𝑥 − 2)³, then 𝑑𝑦/𝑑𝑥=", "3(3𝑥 − 2)²", "3(3𝑥)²", "3(3𝑥 − 2)²", "9(3𝑥 − 2)²"], 
-[127, 127, "Calculus", "Given that y = (3x + 5)/(2x − 11), then dy/dx =", "[(3x + 5)(2)+ (2x − 11)(3)]/(2x − 11)²", "[(2x − 11)(3)+ (3x + 5)(2)]/(2x − 11)²", "[(2x − 11)(3)− (3x + 5)(2)]/(2x − 11)²", "[(3x + 5)(2)− (2x − 11)(3)]/(2x − 11)²"], 
+[127, 127, "Calculus", "Given that y = (3x + 5)/(2x − 11), then dy/dx =", "[(3x + 5)(2)+ (2x − 11)(3)]/(2x − 11)^2", "[(2x − 11)(3)+ (3x + 5)(2)]/(2x − 11)^2", "[(2x − 11)(3)− (3x + 5)(2)]/(2x − 11)^2", "[(3x + 5)(2)− (2x − 11)(3)]/(2x − 11)^2"], 
 [128, 128, "Calculus", "Given that y = (3x + 5)/(2x − 11), then dy/dx =", "[(3x + 5)(2)+ (2x − 11)(3)]/(2x − 11)²", "[(2x − 11)(3)+ (3x + 5)(2)]/(2x − 11)²", "[(2x − 11)(3)− (3x + 5)(2)]/(2x − 11)²", "[(3x + 5)(2)− (2x − 11)(3)]/(2x − 11)²"], 
 [129, 129, "Calculus", "The curve C is given by the equation 𝑦 = 3 𝑠𝑖𝑛 𝑥 + 2. The value of 𝑑𝑦/𝑑𝑥 at the point where 𝑥 = 𝜋/3 is", "1/2", "3/2", "7/2", "3"], 
 [130, 130, "Calculus", "The point 𝑃 (2, 2) lies on the curve with equation 𝑦 = 𝑥(𝑥 − 3)². The equation of the normal to the curve at the point P is given by", "𝑦 − 2 = 3(𝑥 − 2)", "𝑦 − 2 = −3(𝑥 − 2)", "𝑦 − 2 = ( 1/3) (𝑥 − 2)", "𝑦 − 2 = −( 1/3) (𝑥 − 2)"], 
-[131, 131, "Calculus", "The curve C is given by the equation 𝑦 = 4𝑥 + 9/𝑥. The second derivative, $\frac{d^2y}{dx^2}$, is given by", "4 + 9 𝑥³", "18 𝑥³", "4 − 9 𝑥³", "9 2𝑥³"], 
-[132, 132, "Calculus", "The positive value of z for which ∫𝑥 𝟎 𝑧²𝑑𝑥 = 9 is", "3", "4.5", "9", "27"], 
-[133, 133, "Calculus", "The gradient of the tangent to a curve C at (x, y) is given by 𝑑𝑦/𝑑𝑥= 1 (3𝑥 + 4)². The curve passes through the point 𝑃(− 1/2 , 3). The equation of the curve C is given by", "𝑦 = 2 3𝑥 + 4 + 1", "𝑦 = − 6 3𝑥 + 4", "𝑦 = − 2 3𝑥 + 4 + 4", "𝑦 = − 1 3𝑥 + 4 + 1"], 
+[131, 131, "Calculus", "The curve C is given by the equation 𝑦 = 4𝑥 + 9/𝑥. The second derivative, (d^2y)/(dx^2), is given by", "4 + 9/x^3", "18/x^3", "4 − 9/x^3", "9/(2x^3)"], 
+[132, 132, "Calculus", "The positive value of z for which ∫x^2𝑑𝑥 = 9 when x=0 to x = z is", "3", "4.5", "9", "27"], 
+[133, 133, "Calculus", "The gradient of the tangent to a curve C at (x, y) is given by 𝑑𝑦/𝑑𝑥= 1/(3𝑥 + 4)². The curve passes through the point 𝑃(− 1/2 , 3). The equation of the curve C is given by", "𝑦 = 2/(3𝑥 + 4) + 1", "𝑦 = − 6/(3𝑥 + 4)", "𝑦 = − 2/(3𝑥 + 4) + 4", "𝑦 = − 1/(3𝑥 + 4) + 1"], 
 [134, 134, "Calculus", "The finite region R is bounded by the y-axis, the x-axis, and the curve 𝑦 = 𝑥(𝑥 − 3)² as shown in the figure above. The area of R in square units is", "1", "3", "9", "27"], 
-[135, 135, "Calculus", "The finite region enclosed by the curve y = √x, x ≥ 0, the x-axis and the line x = 3 is rotated completely about the x-axis. The volume of the solid of revolution formed is given by:", "∫₀³ (1/3)√x dx", "π ∫₀³ x dx", "π ∫₀³ √x dx", "π ∫₀³ x² dx"], 
+[135, 135, "Calculus", "The finite region enclosed by the curve y = x^2, the x-axis and the line x = 2 is rotated completely about the x-axis. The volume of the solid of revolution formed is given by:", "\int_0^2(1/3)x^2 dx", "\int_0^2 x^4 dx", "π \int_0^2 x^2 dx", "π \int_0^2 x^4 dx"], 
 [136, 136, "Calculus", "The finite region enclosed by the curve 𝑦 = √𝑥, 𝑥 ≥ 0, the x-axis and the line x = 3, as shown in the figure above, is rotated completely about the x-axis. The volume of the solid of revolution formed is given by", "∫₀³ ( 1/3) √𝑥 dx", "𝜋 ∫₀³𝑥 𝑑𝑥", "𝜋 ∫₀³√𝑥 𝑑𝑥", "𝜋 ∫₀³𝑥² 𝑑𝑥"], 
-[137, 137, "Calculus", "∫ (2𝑥 + 3)⁵ dx =", "[ 1/6 (2𝑥 + 3)6] + C", "[ 1/2 (2𝑥 + 3)6] + C", "[ 1/12 (2𝑥 + 3)6] + C", "[ 1/3 (2𝑥 + 3)6] + C"], 
+[137, 137, "Calculus", "∫ (2𝑥 + 3)^5 dx =", "[1/6 (2𝑥 + 3)6] + C", "[1/2 (2𝑥 + 3)6] + C", "[1/12 (2𝑥 + 3)6] + C", "[1/3 (2𝑥 + 3)6] + C"], 
 [138, 138, "Calculus", "Given 𝑑𝑦/𝑑𝑥= 3 sin 𝑥− 2 cos x, the indefinite integral is given by", "𝑦 = 3 cos 𝑥− 2 sin 𝑥+ C", "𝑦 = −3 cos 𝑥+ 2 sin 𝑥+ C", "𝑦 = −3 cos 𝑥− 2 sin 𝑥+ C", "𝑦 = 3 cos 𝑥+ 2 sin 𝑥+ C"], 
-[139, 139, "Calculus", "Given that 𝑦 = √5 – 𝑥, then 𝑑𝑦/𝑑𝑥 is:", "− 1 √5 − 𝑥", "1 √5 − 𝑥", "1/2√5 − 𝑥", "− 1/2√5 − 𝑥"], 
-[140, 140, "Calculus", "The gradient function dy/dx of the curve 𝑦 = 𝑠𝑖𝑛(2𝑥² + 1) is:", "4𝑥 𝑐𝑜𝑠(2𝑥² + 1)", "𝑐𝑜𝑠(2𝑥² + 1)", "1/4𝑥cos(2𝑥² + 1)", "−4𝑥 𝑐𝑜𝑠(2𝑥² + 1)"], 
-[141, 141, "Calculus", "The point P(1, 1) lies on the curve 𝑦 = 3𝑥 – 2/2𝑥 – 1 . The gradient of the tangent at point P is:", "1", "3/2", "5", "−1"], 
-[142, 142, "Calculus", "The curve C has the equation 𝑦 = 𝑓(𝑥). Curve C has a stationary point at (-1, 2). If 𝑓′′(𝑥) = 6 𝑥⁴ + 2, then the point (-1, 2) is:", "an optimum point", "a point of inflexion", "a minimum turning point", "a maximum turning point"], 
-[143, 143, "Calculus", "𝐼𝑓 ∫𝑓(𝑥) 𝑑𝑥 4 1 = 6, then ∫4𝑓(𝑥) 𝑑𝑥 4 1 + 5", "9", "11", "29", "44"], 
+[139, 139, "Calculus", "Given that 𝑦 = √(5 – 𝑥), then 𝑑𝑦/𝑑𝑥 is:", "− 1/(√5 − 𝑥)", "1/(√5 − 𝑥)", "1/(2√5 − 𝑥)", "− 1/(2√5 − 𝑥)"], 
+[140, 140, "Calculus", "The gradient function dy/dx of the curve 𝑦 = 𝑠𝑖𝑛(2𝑥² + 1) is:", "4𝑥 𝑐𝑜𝑠(2𝑥² + 1)", "𝑐𝑜𝑠(2𝑥² + 1)", "(1/4𝑥)cos(2𝑥² + 1)", "−4𝑥 𝑐𝑜𝑠(2𝑥² + 1)"], 
+[141, 141, "Calculus", "The point P(1, 1) lies on the curve 𝑦 = (3𝑥 – 2)/(2𝑥 – 1). The gradient of the tangent at point P is:", "1", "3/2", "5", "−1"], 
+[142, 142, "Calculus", "The curve C has the equation 𝑦 = 𝑓(𝑥). Curve C has a stationary point at (-1, 2). If 𝑓′′(𝑥) = (6/𝑥⁴) + 2, then the point (-1, 2) is:", "an optimum point", "a point of inflexion", "a minimum turning point", "a maximum turning point"], 
+[143, 143, "Calculus", "𝐼𝑓 \int_{4}^{1} ∫𝑓(𝑥) 𝑑𝑥 = 6, then \int_{4}^{1} ∫𝑓(𝑥) dx + 5", "9", "11", "29", "44"], 
 [144, 144, "Calculus", "The region R is enclosed by the x-axis, the curve 𝑦 = −𝑥² + 2 and the lines 𝑥 = 0 and 𝑥 = 1. The area of R is:", "1", "5/3", "2", "7/3"], 
-[145, 145, "Calculus", "The region in the first quadrant enclosed by the curve 𝑦 = 𝑥 – ½ 𝑥², the lines 𝑥 = 0 and 𝑥 = 2 is rotated completely about the x-axis. The volume in 𝑢𝑛𝑖𝑡𝑠3 of the solid generated is:", "2𝜋/3", "8𝜋", "4𝜋/15", "64𝜋/15"], 
-[146, 146, "Calculus", "Given that d/dx (x/(1 + x)) = 1/(1 + x)², then ∫₀² 3/(1 + x)² dx is equal to:", "−1/3", "1/3", "2/3", "2"], 
-[147, 147, "C) 2/3", "The equation of a curve is given by y = (𝑥² + 2)(𝑥 – 1)³. The gradient function, 𝑑𝑦/𝑑𝑥, is given by:", "(𝑥 − 1)(5𝑥² − 2𝑥 + 6)", "(𝑥 − 1)²(−𝑥² − 2𝑥 − 6)", "(𝑥 − 1)²(5𝑥² − 2𝑥 + 6)", "(𝑥 − 1)²(5𝑥² + 2𝑥 + 6)"], 
-[148, 148, "Kinematics Question", "During the journey there is a stage when the boy accelerates. The value of the acceleration is:", "− 10.0 𝑚𝑠⁻²", "2.5 𝑚𝑠⁻²", "3.5 𝑚𝑠⁻²", "20.0 𝑚𝑠⁻²"], 
+[145, 145, "Calculus", "The region in the first quadrant enclosed by the curve 𝑦 = 𝑥 – (1/2)𝑥², the lines 𝑥 = 0 and 𝑥 = 2 is rotated completely about the x-axis. The volume in 𝑢𝑛𝑖𝑡𝑠3 of the solid generated is:", "2𝜋/3", "8𝜋", "4𝜋/15", "64𝜋/15"], 
+[146, 146, "Calculus", "Given that d/dx(x/(1 + x)) = 1/(1 + x)², then \int_{0}^{2} 3/(1 + x)^2 dx is equal to:", "−1/3", "1/3", "2/3", "2"], 
+[147, 147, "Calculus", "The equation of a curve is given by y = (𝑥^2 + 2)(𝑥 – 1)^3. The gradient function, 𝑑𝑦/𝑑𝑥, is given by:", "(𝑥 − 1)(5𝑥² − 2𝑥 + 6)", "(𝑥 − 1)²(−𝑥² − 2𝑥 − 6)", "(𝑥 − 1)²(5𝑥² − 2𝑥 + 6)", "(𝑥 − 1)²(5𝑥² + 2𝑥 + 6)"], 
+[148, 148, "Kinematics Question", "During the journey there is a stage when the boy accelerates. His velocity increased from 10m/s to 20m/s. The value of the acceleration is:", "− 10.0 𝑚𝑠⁻²", "2.5 𝑚𝑠⁻²", "3.5 𝑚𝑠⁻²", "20.0 𝑚𝑠⁻²"], 
 [149, 149, "Kinematics Question", "At the 10 m stopping point on a runway, an airplane is stationary before takeoff. If the plane travels 120 m from this point in 4 seconds, what is its speed at the point of takeoff?", "32 m/s", "27 m/s", "30 m/s", "50 m/s"], 
 [150, 150, "Statistics", "There are 108 cards in a deck of UNO playing cards. There are four “Wild”, four “Wild Draw Four” and 25 each of four colours (red, yellow, green, blue). If a player needs to select 1 card, what is the probability of NOT drawing a “Wild Draw Four”?", "26/27", "25/108", "2/27", "1/108"], 
-[151, 151, "Statistics", "One advantage of using a box and whisker plot is that:", "the variance can be identified", "all data values can be identified", "the mean value can be identified", "the spread of the distribution can be identified Items 147 and 148 refer to the following Venn diagram. There are 120 students in a school’s music club. The Venn diagram shows the probabilities that a randomly selected student plays the piano (N) or guitar (G)."], 
-[152, 152, "Statistics", "What is the value of X?", "0.10", "0.35", "0.90", "1.00"], 
+[151, 151, "Statistics", "One advantage of using a box and whisker plot is that:", "the variance can be identified", "all data values can be identified", "the mean value can be identified", "the spread of the distribution can be identified."], 
+[152, 152, "Statistics", "What is the value of p(N or G)' given that p(N) = 0.40, p(G) = 0.15 and the p(N and G) = 0.35?", "0.10", "0.35", "0.90", "1.00"], 
 [153, 153, "Statistics", "What is P(N | G)?", "0.10", "0.40", "0.47", "0.70 Item refers to the following diagram:"], 
 [154, 154, "Statistics", "The tree diagram above shows the probability of Events A and B occurring. Based on the diagram, the value of P(A | B) =", "1/5", "8/15", "3/5", "4/5"]];
-
 
 const normalizeTopic = (topic: string) => {
   if (topic === "C) 2/3") return "Calculus";
@@ -613,27 +619,126 @@ function plainHtml(text: string) {
   return escapeHtml(text).split(String.fromCharCode(10)).join("<br />");
 }
 
-function isLikelyMathContent(text: string) {
-  const markers = ["√", "∑", "π", "θ", "α", "β", "∫", "=", "^"];
-  return markers.some((marker) => text.includes(marker));
+function plainHtmlWithPowers(text: string) {
+  const powerPattern = /([A-Za-z0-9]+|\)|\])\^(\([^)]*\)|\{[^}]*\}|[A-Za-z0-9+\-]+)/g;
+  const fractionPattern = /(\([^()]+\)|\[[^\[\]]+\]|[A-Za-z0-9.+\-√πθαβ]+)\/(\([^()]+\)|\[[^\[\]]+\]|[A-Za-z0-9.+\-√πθαβ]+)/g;
+
+  function applyPowers(segment: string) {
+    let html = "";
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = powerPattern.exec(segment)) !== null) {
+      const [fullMatch, base, rawExponent] = match;
+      const exponent =
+        (rawExponent.startsWith("(") && rawExponent.endsWith(")")) ||
+        (rawExponent.startsWith("{") && rawExponent.endsWith("}"))
+          ? rawExponent.slice(1, -1)
+          : rawExponent;
+
+      html += plainHtml(segment.slice(lastIndex, match.index));
+      html += `${escapeHtml(base)}<sup>${escapeHtml(exponent)}</sup>`;
+      lastIndex = match.index + fullMatch.length;
+    }
+
+    html += plainHtml(segment.slice(lastIndex));
+    return html;
+  }
+
+  function cleanFractionPart(part: string) {
+    if ((part.startsWith("(") && part.endsWith(")")) || (part.startsWith("[") && part.endsWith("]"))) {
+      return part.slice(1, -1);
+    }
+    return part;
+  }
+
+  let html = "";
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = fractionPattern.exec(text)) !== null) {
+    const [fullMatch, rawNumerator, rawDenominator] = match;
+    const numerator = cleanFractionPart(rawNumerator);
+    const denominator = cleanFractionPart(rawDenominator);
+
+    html += applyPowers(text.slice(lastIndex, match.index));
+    html += `<span class="mx-0.5 inline-flex min-w-[1.8em] flex-col items-center align-middle leading-none"><span class="border-b border-current px-1 pb-0.5">${applyPowers(numerator)}</span><span class="px-1 pt-0.5">${applyPowers(denominator)}</span></span>`;
+    lastIndex = match.index + fullMatch.length;
+  }
+
+  html += applyPowers(text.slice(lastIndex));
+  return html;
 }
 
+function normalizeMathAlphabet(text: string) {
+  const ranges = [
+    { start: 0x1d400, end: 0x1d419, base: 0x41 },
+    { start: 0x1d41a, end: 0x1d433, base: 0x61 },
+    { start: 0x1d434, end: 0x1d44d, base: 0x41 },
+    { start: 0x1d44e, end: 0x1d467, base: 0x61 },
+    { start: 0x1d468, end: 0x1d481, base: 0x41 },
+    { start: 0x1d482, end: 0x1d49b, base: 0x61 },
+    { start: 0x1d5a0, end: 0x1d5b9, base: 0x41 },
+    { start: 0x1d5ba, end: 0x1d5d3, base: 0x61 },
+    { start: 0x1d5d4, end: 0x1d5ed, base: 0x41 },
+    { start: 0x1d5ee, end: 0x1d607, base: 0x61 },
+    { start: 0x1d608, end: 0x1d621, base: 0x41 },
+    { start: 0x1d622, end: 0x1d63b, base: 0x61 },
+    { start: 0x1d63c, end: 0x1d655, base: 0x41 },
+    { start: 0x1d656, end: 0x1d66f, base: 0x61 },
+    { start: 0x1d670, end: 0x1d689, base: 0x41 },
+    { start: 0x1d68a, end: 0x1d6a3, base: 0x61 },
+  ];
+
+  return Array.from(text)
+    .map((character) => {
+      const codePoint = character.codePointAt(0);
+      if (!codePoint) return character;
+      const match = ranges.find((range) => codePoint >= range.start && codePoint <= range.end);
+      return match ? String.fromCodePoint(match.base + (codePoint - match.start)) : character;
+    })
+    .join("");
+}
+
+
+
 function renderRichText(text: string) {
-  if (!PROFESSIONAL_EQUATION_RENDERING || !isLikelyMathContent(text)) {
-    return { __html: plainHtml(text) };
+  const normalizedText = normalizeMathAlphabet(text);
+
+  if (!PROFESSIONAL_EQUATION_RENDERING) {
+    return { __html: plainHtmlWithPowers(normalizedText) };
   }
 
-  try {
-    return {
-      __html: katex.renderToString(text, {
-        throwOnError: false,
-        displayMode: false,
-        strict: false,
-      }),
-    };
-  } catch {
-    return { __html: plainHtml(text) };
-  }
+  const mathPattern = /(\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]|\$[^$]+\$)/g;
+  const parts = normalizedText.split(mathPattern);
+
+  const html = parts
+    .map((part) => {
+      if (!part) return "";
+
+      const isInlineLatex = part.startsWith("\\(") && part.endsWith("\\)");
+      const isDisplayLatex = part.startsWith("\\[") && part.endsWith("\\]");
+      const isDollarLatex = part.startsWith("$") && part.endsWith("$");
+
+      if (!isInlineLatex && !isDisplayLatex && !isDollarLatex) {
+        return plainHtmlWithPowers(part);
+      }
+
+      const expression = isInlineLatex || isDisplayLatex ? part.slice(2, -2) : part.slice(1, -1);
+
+      try {
+        return katex.renderToString(expression, {
+          throwOnError: false,
+          displayMode: isDisplayLatex,
+          strict: false,
+        });
+      } catch {
+        return plainHtmlWithPowers(part);
+      }
+    })
+    .join("");
+
+  return { __html: html || plainHtmlWithPowers(normalizedText) };
 }
 
 function RichText({ text, className = "" }: { text: string; className?: string }) {
