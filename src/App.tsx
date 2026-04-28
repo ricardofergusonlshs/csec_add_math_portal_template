@@ -1,245 +1,185 @@
-import React, { Fragment, createContext, forwardRef, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import katex from "katex";
-import "katex/dist/katex.min.css";
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSEC Additional Mathematics MCQ Portal</title>
+  <meta name="description" content="Static CSEC Additional Mathematics multiple choice assessment portal with student, parent, and teacher views." />
+  <style>
+    :root {
+      --bg1: #1f3a8a;
+      --bg2: #253b9f;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --soft: #f8fafc;
+      --card: #ffffff;
+      --brand: #111827;
+      --green: #047857;
+      --green-soft: #ecfdf5;
+      --red: #be123c;
+      --red-soft: #fff1f2;
+      --amber: #92400e;
+      --amber-soft: #fffbeb;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 50%, #2f3a97 100%);
+    }
+    button, input, select, textarea { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+    .hero {
+      color: white;
+      text-align: center;
+      padding: 34px 24px 28px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 28px;
+      margin-bottom: 22px;
+    }
+    .eyebrow { font-size: 13px; letter-spacing: .34em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+    h1 { margin: 14px 0 6px; font-size: clamp(2.2rem, 6vw, 4.1rem); line-height: .98; letter-spacing: -.04em; }
+    .hero p { margin: 0 0 24px; font-size: clamp(1.1rem, 2vw, 1.55rem); color: rgba(255,255,255,.9); }
+    .tabs, .actions, .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .tabs { justify-content: center; }
+    .btn {
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 6px 14px rgba(15,23,42,.13);
+    }
+    .btn:hover { transform: translateY(-1px); background: #f8fafc; }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+    .btn.primary, .btn.active { background: var(--brand); color: white; border-color: var(--brand); }
+    .btn.secondary { background: #e2e8f0; border-color: #e2e8f0; }
+    .btn.danger { background: var(--red); color: white; border-color: var(--red); }
+    .grid { display: grid; gap: 18px; }
+    .grid.two { grid-template-columns: minmax(0, 1.12fr) minmax(300px, .88fr); align-items: start; }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(15,23,42,.07);
+      overflow: hidden;
+    }
+    .card-header { padding: 22px 22px 12px; }
+    .card-content { padding: 22px; }
+    .card-header + .card-content { padding-top: 10px; }
+    h2, h3 { margin: 0; letter-spacing: -.02em; }
+    h2 { font-size: 1.55rem; }
+    h3 { font-size: 1.18rem; }
+    .desc { color: var(--muted); margin: 6px 0 0; font-size: 14px; line-height: 1.55; }
+    label { display: block; margin-bottom: 7px; font-weight: 700; font-size: 14px; color: #1e293b; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: white;
+      color: var(--ink);
+      padding: 11px 12px;
+      outline: none;
+    }
+    textarea { min-height: 105px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: #475569; }
+    .field { margin-bottom: 16px; }
+    .topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .topic-btn {
+      text-align: left;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+      cursor: pointer;
+      color: #334155;
+    }
+    .topic-btn.selected { background: var(--brand); color: white; border-color: var(--brand); }
+    .note { border: 1px solid var(--line); background: var(--soft); border-radius: 10px; padding: 12px 14px; color: #334155; font-size: 14px; line-height: 1.55; }
+    .note.warn { border-color: #fde68a; background: var(--amber-soft); color: var(--amber); }
+    .note.good { border-color: #bbf7d0; background: var(--green-soft); color: var(--green); }
+    .stat { padding: 18px; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; }
+    .stat small { color: var(--muted); display: block; margin-bottom: 8px; }
+    .stat strong { font-size: 2rem; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 800; border: 1px solid #cbd5e1; color: #334155; background: #fff; }
+    .badge.dark { background: var(--brand); color: white; border-color: var(--brand); }
+    .badge.green { background: var(--green-soft); color: var(--green); border-color: #bbf7d0; }
+    .badge.red { background: var(--red-soft); color: var(--red); border-color: #fecdd3; }
+    .topbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px; background: white; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: 0 8px 20px rgba(15,23,42,.05); }
+    .progress-wrap { min-width: min(260px, 100%); }
+    .progress-label { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+    .progress { height: 9px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+    .progress > span { display: block; height: 100%; background: var(--brand); transition: width .2s ease; }
+    .question-box { border: 1px solid var(--line); background: var(--soft); border-radius: 18px; padding: 24px; margin-bottom: 24px; }
+    .question-label { text-transform: uppercase; letter-spacing: .22em; color: #64748b; font-size: 12px; font-weight: 900; margin-bottom: 12px; }
+    .question-text { font-size: clamp(1.25rem, 2.7vw, 1.85rem); line-height: 1.55; white-space: pre-wrap; }
+    .option-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .option {
+      min-height: 86px;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      background: white;
+      padding: 18px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, border .15s ease;
+    }
+    .option:hover { transform: translateY(-1px); box-shadow: 0 10px 18px rgba(15,23,42,.08); }
+    .option.selected { background: var(--brand); color: white; border-color: var(--brand); box-shadow: 0 10px 22px rgba(15,23,42,.18); }
+    .option.correct { background: var(--green-soft); border-color: #34d399; color: #064e3b; }
+    .option.wrong { background: var(--red-soft); border-color: #fb7185; color: #881337; }
+    .option .letter { display: block; font-weight: 900; margin-bottom: 7px; }
+    .result-item { margin-top: 16px; }
+    .attempt-card { margin-bottom: 16px; }
+    .hidden { display: none !important; }
+    .list { margin: 0; padding-left: 18px; color: #334155; line-height: 1.75; font-size: 14px; }
+    .splitline { border-top: 1px solid var(--line); margin: 18px 0; }
+    sup { font-size: .68em; }
+    .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1; margin: 0 .1em; }
+    .frac .top { border-bottom: 1px solid currentColor; padding: 0 .22em .1em; }
+    .frac .bottom { padding: .12em .22em 0; }
+    @media (max-width: 880px) {
+      .grid.two, .grid.three, .grid.four, .option-grid, .topic-grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .shell { width: min(100% - 20px, 1180px); padding-top: 14px; }
+    }
+    @media print {
+      body { background: white; }
+      .hero, .tabs, .btn, .no-print { display: none !important; }
+      .shell { width: 100%; padding: 0; }
+      .card { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Student Assessment Portal</div>
+      <h1>CSEC Additional Mathematics</h1>
+      <p>Multiple Choice Questions</p>
+      <div class="tabs no-print">
+        <button class="btn active" data-role-button="student">Student view</button>
+        <button class="btn" data-role-button="parent">Parent view</button>
+        <button class="btn" data-role-button="teacher">Teacher view</button>
+      </div>
+    </section>
 
-type PrimitiveProps<T> = React.HTMLAttributes<T> & { className?: string };
+    <section id="studentView"></section>
+    <section id="parentView" class="hidden"></section>
+    <section id="teacherView" class="hidden"></section>
+  </main>
 
-function cn(...parts: Array<string | false | null | undefined>) {
-  return parts.filter(Boolean).join(" ");
-}
-
-const Card = ({ className = "", ...props }: PrimitiveProps<HTMLDivElement>) => (
-  <div {...props} className={cn("rounded-xl border border-slate-200 bg-white", className)} />
-);
-
-const CardHeader = ({ className = "", ...props }: PrimitiveProps<HTMLDivElement>) => (
-  <div {...props} className={cn("space-y-1.5 p-6", className)} />
-);
-
-const CardContent = ({ className = "", ...props }: PrimitiveProps<HTMLDivElement>) => (
-  <div {...props} className={cn("p-6 pt-0", className)} />
-);
-
-const CardTitle = ({ className = "", ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 {...props} className={cn("text-lg font-semibold text-slate-900", className)} />
-);
-
-const CardDescription = ({ className = "", ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p {...props} className={cn("text-sm text-slate-500", className)} />
-);
-
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "default" | "outline" | "destructive" | "secondary";
-};
-
-const buttonVariants: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  default: "bg-slate-900 text-white hover:bg-slate-800 border border-slate-900",
-  outline: "bg-white text-slate-900 hover:bg-slate-50 border border-slate-300",
-  destructive: "bg-rose-600 text-white hover:bg-rose-700 border border-rose-600",
-  secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 border border-slate-200",
-};
-
-const Button = ({ className = "", variant = "default", type = "button", ...props }: ButtonProps) => (
-  <button
-    type={type}
-    {...props}
-    className={cn(
-      "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
-      buttonVariants[variant],
-      className
-    )}
-  />
-);
-
-const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className = "", ...props }, ref) => (
-  <input
-    ref={ref}
-    {...props}
-    className={cn("w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-slate-500", className)}
-  />
-));
-Input.displayName = "Input";
-
-type BadgeProps = React.HTMLAttributes<HTMLSpanElement> & {
-  variant?: "default" | "secondary" | "destructive" | "outline";
-};
-
-const badgeVariants: Record<NonNullable<BadgeProps["variant"]>, string> = {
-  default: "bg-slate-900 text-white border border-slate-900",
-  secondary: "bg-slate-100 text-slate-800 border border-slate-200",
-  destructive: "bg-rose-100 text-rose-700 border border-rose-200",
-  outline: "bg-white text-slate-700 border border-slate-300",
-};
-
-const Badge = ({ className = "", variant = "default", ...props }: BadgeProps) => (
-  <span
-    {...props}
-    className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium", badgeVariants[variant], className)}
-  />
-);
-
-const Label = ({ className = "", ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) => (
-  <label {...props} className={cn("text-sm font-medium text-slate-800", className)} />
-);
-
-const Checkbox = ({
-  checked,
-  className = "",
-  onCheckedChange,
-  onChange,
-  ...props
-}: Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> & {
-  checked?: boolean;
-  onCheckedChange?: (checked: boolean) => void;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-}) => (
-  <input
-    type="checkbox"
-    checked={!!checked}
-    {...props}
-    onChange={(e) => {
-      onCheckedChange?.(e.target.checked);
-      onChange?.(e);
-    }}
-    className={cn("h-4 w-4 rounded border-slate-300 text-slate-900 accent-slate-900", className)}
-  />
-);
-
-const Progress = ({ value = 0, className = "" }: { value?: number; className?: string }) => (
-  <div className={cn("h-2 w-full overflow-hidden rounded-full bg-slate-200", className)}>
-    <div className="h-full rounded-full bg-slate-900 transition-all" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
-  </div>
-);
-
-const Textarea = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(({ className = "", ...props }, ref) => (
-  <textarea
-    ref={ref}
-    {...props}
-    className={cn("min-h-[96px] w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-500", className)}
-  />
-));
-Textarea.displayName = "Textarea";
-
-type SelectContextValue = {
-  value: string;
-  onValueChange?: (value: string) => void;
-  placeholder?: string;
-};
-
-const SelectContext = createContext<SelectContextValue>({ value: "" });
-
-function Select({ value, onValueChange, children }: { value: string; onValueChange?: (value: string) => void; children: React.ReactNode }) {
-  return <SelectContext.Provider value={{ value, onValueChange }}>{children}</SelectContext.Provider>;
-}
-
-function SelectTrigger({ className = "", children }: PrimitiveProps<HTMLDivElement>) {
-  return <div className={cn("w-full", className)}>{children}</div>;
-}
-
-function SelectValue() {
-  const { value, placeholder } = useContext(SelectContext);
-  return <span>{value || placeholder || "Select an option"}</span>;
-}
-
-function SelectContent({ children }: { children: React.ReactNode }) {
-  const { value, onValueChange } = useContext(SelectContext);
-  const items = React.Children.toArray(children).filter(React.isValidElement) as React.ReactElement<{
-    value?: string;
-    "data-value"?: string;
-    children: React.ReactNode;
-  }>[];
-
-  return (
-    <select
-      value={value}
-      onChange={(e) => onValueChange?.(e.target.value)}
-      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500"
-    >
-      {items.map((item, index) => {
-        const itemValue = item.props.value ?? item.props["data-value"] ?? String(index);
-        return (
-          <option key={itemValue} value={itemValue}>
-            {item.props.children}
-          </option>
-        );
-      })}
-    </select>
-  );
-}
-
-function SelectItem({ value, children }: { value: string; children: React.ReactNode }) {
-  return <div data-value={value}>{children}</div>;
-}
-
-
-type OptionKey = "A" | "B" | "C" | "D";
-type Mode = "practice" | "trial" | "exam";
-type Role = "student" | "parent" | "teacher";
-
-type Question = {
-  id: number;
-  sourceNumber: number;
-  topic: string;
-  subtopic: string;
-  difficulty: string;
-  stem: string;
-  options: Record<OptionKey, string>;
-  optionOrder?: OptionKey[];
-  correctAnswer?: OptionKey | null;
-  explanation?: string;
-  answerKeyStatus: "pending" | "verified";
-  source: string;
-};
-
-type AttemptAnswer = {
-  questionId: number;
-  selected?: OptionKey;
-  isCorrect?: boolean;
-  changedCount: number;
-  timeSpentSeconds: number;
-};
-
-type IntegrityEventType = "tab_blur" | "tab_focus" | "rapid_navigation" | "very_fast_finish" | "refresh_recovery" | "fullscreen_exit" | "blocked_action" | "blocked_shortcut";
-
-type IntegrityEvent = {
-  type: IntegrityEventType;
-  at: string;
-  details?: string;
-};
-
-type Attempt = {
-  id: string;
-  studentName: string;
-  schoolName?: string;
-  studentEmail?: string;
-  studentAuthUserId?: string;
-  mode: Mode;
-  selectedTopics: string[];
-  questionCount: number;
-  startedAt: string;
-  submittedAt?: string;
-  durationMinutes: number;
-  answers: AttemptAnswer[];
-  questions: Question[];
-  score: number;
-  percentage: number;
-  scoredQuestionCount: number;
-  integrityEvents: IntegrityEvent[];
-  teacherFeedback?: string;
-};
-
-type StudentAuthSession = {
-  accessToken: string;
-  refreshToken?: string;
-  email: string;
-  userId?: string;
-};
-
-const ANSWERS_VISIBLE_ONLY_AFTER_SUBMIT = true;
-const PROFESSIONAL_EQUATION_RENDERING = false;
-
-const RAW_QUESTION_BANK: [number, number, string, string, string, string, string, string][] = [[1, 1, "Factorization", "𝑎(𝑏 + 𝑐) − 𝑏(𝑎 + 𝑐) is equal to", "𝑎(𝑐 − 𝑏)", "𝑎(𝑏 − 𝑐)", "𝑐(𝑎 − 𝑏)", "𝑐(𝑏 − 𝑎)"],
+  <script>
+    const RAW_QUESTION_BANK = [[1, 1, "Factorization", "𝑎(𝑏 + 𝑐) − 𝑏(𝑎 + 𝑐) is equal to", "𝑎(𝑐 − 𝑏)", "𝑎(𝑏 − 𝑐)", "𝑐(𝑎 − 𝑏)", "𝑐(𝑏 − 𝑎)"],
 [2, 2, "Factorization", "The expression ab + 3c − 3b − ac is equal to", "(𝑎 + 3)(𝑐 − 𝑏)", "(𝑎 + 3)(𝑏 − 𝑐)", "(𝑎 − 3)(𝑏 + 𝑐)", "(𝑎 − 3)(𝑏 − 𝑐)"],
 [3, 3, "Factorization", "The expression ab + 3c − 3b − ac is equal to", "(𝑎 + 3)(𝑐 − 𝑏)", "(𝑎 + 3)(𝑏 − 𝑐)", "(𝑎 − 3)(𝑏 − 𝑐)", "(𝑎 − 3)(𝑏 + 𝑐)"],
 [4, 4, "Factorization", "1/(𝑥 + 3) + 3/(𝑥² − 9) expressed as a single fraction is:", "𝑥/(𝑥² − 9)", "(𝑥² − 6)/(𝑥² − 9)(𝑥 + 3)", "(𝑥 + 6)/(𝑥² − 9)", "4/(𝑥 + 3)"],
@@ -380,7 +320,7 @@ IV. k = −√17`, "I or II only", "I or III only", "I or IV only", "II or IV on
 [132, 132, "Calculus", "The positive value of z for which ∫x^2𝑑𝑥 = 9 when x=0 to x = z is", "3", "4.5", "9", "27"],
 [133, 133, "Calculus", "The gradient of the tangent to a curve C at (x, y) is given by 𝑑𝑦/𝑑𝑥= 1/(3𝑥 + 4)². The curve passes through the point 𝑃(− 1/2 , 3). The equation of the curve C is given by", "𝑦 = 2/(3𝑥 + 4) + 1", "𝑦 = − 6/(3𝑥 + 4)", "𝑦 = − 2/(3𝑥 + 4) + 4", "𝑦 = − 1/(3𝑥 + 4) + 1"],
 [134, 134, "Calculus", "The finite region R is bounded by the y-axis, the x-axis, and the curve 𝑦 = 𝑥(𝑥 − 3)² as shown in the figure above. The area of R in square units is", "1", "3", "9", "27"],
-[135, 135, "Calculus", "The finite region enclosed by the curve y = x^2, the x-axis and the line x = 2 is rotated completely about the x-axis. The volume of the solid of revolution formed is given by:", "\int_0^2(1/3)x^2 dx", "\int_0^2 x^4 dx", "π \int_0^2 x^2 dx", "π \int_0^2 x^4 dx"],
+[135, 135, "Calculus", "The finite region enclosed by the curve y = x^2, the x-axis and the line x = 2 is rotated completely about the x-axis. The volume of the solid of revolution formed is given by:", "∫_0^2(1/3)x^2 dx", "∫_0^2 x^4 dx", "π ∫_0^2 x^2 dx", "π ∫_0^2 x^4 dx"],
 [136, 136, "Calculus", "The finite region enclosed by the curve 𝑦 = √𝑥, 𝑥 ≥ 0, the x-axis and the line x = 3, as shown in the figure above, is rotated completely about the x-axis. The volume of the solid of revolution formed is given by", "∫₀³ ( 1/3) √𝑥 dx", "𝜋 ∫₀³𝑥 𝑑𝑥", "𝜋 ∫₀³√𝑥 𝑑𝑥", "𝜋 ∫₀³𝑥² 𝑑𝑥"],
 [137, 137, "Calculus", "∫(2𝑥 + 3)^5 dx =", "[1/6 (2𝑥 + 3)6] + C", "[1/2 (2𝑥 + 3)6] + C", "[1/12 (2𝑥 + 3)6] + C", "[1/3 (2𝑥 + 3)6] + C"],
 [138, 138, "Calculus", "Given 𝑑𝑦/𝑑𝑥= 3 sin 𝑥− 2 cos x, the indefinite integral is given by", "𝑦 = 3 cos𝑥 − 2 sin𝑥 + C", "𝑦 = −3 cos𝑥 + 2 sin𝑥 + C", "𝑦 = −3 cos 𝑥− 2 sin 𝑥+ C", "𝑦 = 3 cos 𝑥+ 2 sin 𝑥+ C"],
@@ -401,1928 +341,514 @@ IV. k = −√17`, "I or II only", "I or III only", "I or IV only", "II or IV on
 [153, 153, "Statistics", "What is P(N | G)?", "0.10", "0.40", "0.47", "0.70"],
 [154, 154, "Statistics", "The tree diagram above shows the probability of Events A and B occurring. Based on the diagram, the value of P(A | B) =", "1/5", "8/15", "3/5", "4/5"]];
 
-const normalizeTopic = (topic: string) => {
-  if (topic === "C) 2/3") return "Calculus";
-  return topic;
-};
-
-type QuestionPatch = {
-  topic?: string;
-  subtopic?: string;
-  difficulty?: string;
-  stem?: string;
-  options?: Partial<Record<OptionKey, string>>;
-  correctAnswer?: OptionKey | null;
-  explanation?: string;
-  answerKeyStatus?: "pending" | "verified";
-  exclude?: boolean;
-};
-
-const QUESTION_PATCHES: Record<number, QuestionPatch> = {
-  18: {
-    exclude: true,
-    explanation: "Duplicate/incomplete item removed from active bank until cleaned.",
-  },
-  51: {
-    exclude: true,
-    explanation: "Duplicate item removed from active bank until cleaned.",
-  },
-  72: {
-    stem: "The value of √18 + √50 is",
-  },
-  147: {
-    topic: "Calculus",
-    subtopic: "Calculus",
-  },
-};
-
-const ANSWER_OVERRIDES: Record<number, { correctAnswer: OptionKey; explanation: string }> = {
-  1: { correctAnswer: "C", explanation: "Expand the brackets: a(b + c) − b(a + c) = ab + ac − ab − bc = ac − bc = c(a − b)." },
-  2: { correctAnswer: "D", explanation: "Group the terms: ab + 3c − 3b − ac = a(b − c) − 3(b − c) = (a − 3)(b − c)." },
-  3: { correctAnswer: "C", explanation: "Group the terms: ab + 3c − 3b − ac = a(b − c) − 3(b − c) = (a − 3)(b − c)." },
-  4: { correctAnswer: "A", explanation: "Since x² − 9 = (x + 3)(x − 3), write 1 over x + 3 as x − 3 over x² − 9. Then add 3 over x² − 9 to get x over x² − 9." },
-  5: { correctAnswer: "A", explanation: "Rearrange the expression: pq + 5r − 5q − pr = p(q − r) − 5(q − r) = (p − 5)(q − r)." },
-  6: { correctAnswer: "A", explanation: "If x − 2 is a factor, then f(2) = 0. So 8 + 8 − 10 + k = 0, giving k = −6." },
-  7: { correctAnswer: "A", explanation: "Use the factor theorem. Substituting x = 2 gives 4(2⁴) − 2(2²) − 56 = 64 − 8 − 56 = 0." },
-  8: { correctAnswer: "D", explanation: "Divide x³ − 7x² + 2x − 1 by x + 2. The quotient is x² − 9x + 20." },
-  9: { correctAnswer: "A", explanation: "Substitute x = 2. The value is 4(2⁴) − 2(2²) − 56 = 64 − 8 − 56 = 0, so x − 2 is a factor." },
-  10: { correctAnswer: "C", explanation: "If x + 2 is a factor, then f(−2) = 0. So 2(−2)³ − 3(−2)² − 5(−2) + p = 0 gives −16 − 12 + 10 + p = 0, so p = 18." },
-  11: { correctAnswer: "D", explanation: "Testing x = 2 gives zero, so x − 2 is a factor. The quotient is 2x² + 5x + 3 = (2x + 3)(x + 1)." },
-  12: { correctAnswer: "C", explanation: "For division by 2x − 1, use x = 1 over 2. Then 2(1 over 2)³ + 3(1 over 2)² − 2(1 over 2) + 3 = 3." },
-  13: { correctAnswer: "A", explanation: "Expand (2x + 1)(x + 2)(x − 3). The result is 2x³ − x² − 13x − 6, so h = −13." },
-  14: { correctAnswer: "D", explanation: "Test the listed roots. Substituting x = 4 gives 64 − 48 − 12 − 4 = 0, so x − 4 is the linear factor." },
-  15: { correctAnswer: "B", explanation: "Sum 3r − 1 from r = 1 to 20: 3 times the sum of 1 to 20 minus 20 gives 3 times 210 minus 20 = 610." },
-  16: { correctAnswer: "B", explanation: "This is an AP with first term 30 and common difference −2 because the fourth term is 24. The tenth term is 12, so the sum is 10 over 2 times 42 = 210 centimetres." },
-  17: { correctAnswer: "C", explanation: "If the first term is 16 and the fifth term is 81, then 16r⁴ = 81, so r = 3 over 2. The fourth term is 16 times 3 over 2 cubed = 54." },
-  19: { correctAnswer: "C", explanation: "This GP has first term 81 and ratio 1 over 3. Sum to infinity is 81 divided by 1 minus 1 over 3, which equals 121.5." },
-  20: { correctAnswer: "B", explanation: "For a GP, T5 = 45 and T7 = 5, so r² = 1 over 9. Since terms are positive, r = 1 over 3, so T6 = 45 times 1 over 3 = 15." },
-  21: { correctAnswer: "D", explanation: "This GP has first term 500 and ratio 2 over 5. Sum to infinity is 500 divided by 1 minus 2 over 5 = 2500 over 3." },
-  22: { correctAnswer: "A", explanation: "Convert 3 minutes 45 seconds to 225 seconds. This AP has 12 terms and common difference 12, so the total is 3492 seconds, which is 58 minutes 12 seconds." },
-  23: { correctAnswer: "B", explanation: "The odd integers are 11, 13, up to 49. There are 20 terms, and the average is 30, so the sum is 20 times 30 = 600." },
-  24: { correctAnswer: "D", explanation: "This is the same GP as item 21. Sum to infinity is 500 divided by 1 minus 2 over 5 = 2500 over 3." },
-  25: { correctAnswer: "C", explanation: "Divide the second term by the first term: 12 over 8 = 3 over 2." },
-  26: { correctAnswer: "A", explanation: "For an AP, nth term = first term plus n minus 1 times the common difference. That gives −12 + 5n − 5 = 5n − 17." },
-  27: { correctAnswer: "A", explanation: "The differences are −9, then −10, then −11, so the difference is not constant." },
-  28: { correctAnswer: "C", explanation: "This is a GP with first term −2 and ratio −2 over 3. Sum to infinity is −2 divided by 1 plus 2 over 3 = −6 over 5." },
-  29: { correctAnswer: "B", explanation: "If Sn = 4ⁿ − 1, then the terms are found from differences of sums. The common ratio is 4, statement III is true, and statement II is false because the first three terms are 3, 12 and 48." },
-  30: { correctAnswer: "D", explanation: "Add 1 + 1 over 2 + 1 over 3 = 6 over 6 + 3 over 6 + 2 over 6 = 11 over 6." },
-  31: { correctAnswer: "C", explanation: "Sum 5 − 3r from r = 1 to 10. This gives 10 times 5 minus 3 times 55 = 50 − 165 = −115." },
-  32: { correctAnswer: "C", explanation: "U₁₀ = 3 times 1 over 2 to the power 9, which equals 3 over 512." },
-  33: { correctAnswer: "D", explanation: "Write everything in base 2. Then 2 times 4 to the power x + 1 becomes 2 to the power 2x + 3, and 16 to the power 2x becomes 2 to the power 8x. Equate powers to get x = 1 over 2." },
-  34: { correctAnswer: "D", explanation: "Interpreting the expression as the nth root of 2 times 4 to the power m gives the nth root of 2 to the power 2m + 1, so the result is 2 to the power 2m + 1 all over n." },
-  35: { correctAnswer: "A", explanation: "Interpreting the expression as the nth root of 3 times 27 to the power m gives the nth root of 3 to the power 3m + 1, so the result is 3 to the power 3m + 1 all over n." },
-  36: { correctAnswer: "B", explanation: "Combine the logs: log base 2 of x times 6x + 1 equals 1. So x times 6x + 1 = 2, which gives x = 1 over 2 after checking the domain." },
-  37: { correctAnswer: "A", explanation: "log base 4 of 8 is 3 over 2, log base 4 of 2 is 1 over 2, and log base 4 of 1 over 16 is −2. So 3 over 2 minus 1 over 2 minus 2 = −1." },
-  38: { correctAnswer: "C", explanation: "2 to the power z = 2 to the power 5 plus log base 2 of 3 = 2⁵ times 3 = 96." },
-  39: { correctAnswer: "C", explanation: "8 to the power 1 over 3 is 2, so 2 to the power −1 divided by 2 = 1 over 2 divided by 2 = 1 over 4." },
-  40: { correctAnswer: "A", explanation: "Write 4 as 2². Then 4 to the power x + 1 = 2 gives 2 to the power 2x + 2 = 2¹, so x = −1 over 2." },
-  41: { correctAnswer: "A", explanation: "log base p of XY = log base p of X + log base p of Y = 6 + 4 = 10." },
-  42: { correctAnswer: "B", explanation: "log base 2 of x³ = 6 means x³ = 64, so x = 4." },
-  43: { correctAnswer: "A", explanation: "Interpreting the right side as 9 to the power x, convert to base 3. Then 3 times 27 to the power 2x = 3 to the power 6x + 1 and 9 to the power x = 3 to the power 2x, so x = −1 over 4." },
-  44: { correctAnswer: "C", explanation: "Move the 2 inside the logarithm: log base 3 of 2x + 1 = log base 3 of 9 times 3x − 11. So 2x + 1 = 27x − 99, giving x = 4." },
-  45: { correctAnswer: "B", explanation: "Write 9 as 3². Then 9 to the power x + 1 = 3 becomes 3 to the power 2x + 2 = 3¹, so x = −1 over 2." },
-  46: { correctAnswer: "B", explanation: "Factor out 3 to the power x. Then 3 to the power x times 9 + 1 = 90, so 10 times 3 to the power x = 90, giving 3 to the power x = 9 and x = 2." },
-  47: { correctAnswer: "B", explanation: "Combine the logs: log base 2 of 5x + 1 over 3x − 5 equals 2. So 5x + 1 over 3x − 5 = 4, giving x = 3 after checking the domain." },
-  48: { correctAnswer: "C", explanation: "Statement I is false because the log of a product is a sum, not a product. Statements II and III are true." },
-  49: { correctAnswer: "C", explanation: "For x² + 3x + 4 = 0, the sum of roots is −3. So a + b all squared is 9." },
-  50: { correctAnswer: "A", explanation: "A quadratic with sum of roots −2 over 3 and product 3 over 4 is x² plus 2 over 3 x plus 3 over 4 = 0. Multiply by 12 to get 12x² + 8x + 9 = 0." },
-  52: { correctAnswer: "D", explanation: "The discriminant is b² − 4ac = 1 − 8 = −7, which is negative, so the roots are not real and distinct." },
-  53: { correctAnswer: "C", explanation: "The discriminant is 6² − 4 times 5 times −2 = 36 + 40 = 76, which is positive, so the roots are real and distinct." },
-  54: { correctAnswer: "B", explanation: "The discriminant is −6 squared minus 4 times 3 times −5 = 36 + 60 = 96, which is positive, so the roots are real and distinct." },
-  57: { correctAnswer: "C", explanation: "Substitute 2a + 3 into h(x) = 5x + 2. This gives 5 times 2a + 3 plus 2 = 10a + 17." },
-  58: { correctAnswer: "D", explanation: "f² means f composed with itself. Since f(x) = 2x − 1, then f of f(x) = 2 times 2x − 1 minus 1 = 4x − 3." },
-  59: { correctAnswer: "C", explanation: "Complete the square: −5 − 8x − 2x² = −2 times x + 2 all squared plus 3, which is 3 − 2 times x + 2 all squared." },
-  60: { correctAnswer: "C", explanation: "4 − x + 1 all squared is largest when x + 1 = 0, so x = −1 and the maximum value is 4." },
-  62: { correctAnswer: "D", explanation: "Because the question says f(x) is less than or equal to k, k must be the maximum value. The vertex occurs at x = −1 over 4, and f of −1 over 4 = 49 over 8." },
-  63: { correctAnswer: "C", explanation: "Complete the square: x² − 8x + 19 = x − 4 all squared + 3, so a = 1, h = −4 and k = 3." },
-  64: { correctAnswer: "B", explanation: "Complete the square: x² − 6x + 13 = x − 3 all squared + 4, so a = 1, h = −3 and k = 4." },
-  65: { correctAnswer: "C", explanation: "Completing the square gives ax² + bx + c = a times x + b over 2a all squared plus 4ac − b² all over 4a." },
-  66: { correctAnswer: "C", explanation: "Rewrite 1 − 4x − 2x² as −2 times x + 1 all squared + 3, which is 3 − 2 times x + 1 all squared." },
-  67: { correctAnswer: "C", explanation: "f(x) = x(1 − x) = −x² + x, which is a downward-opening parabola with a maximum at x = 1 over 2." },
-  68: { correctAnswer: "D", explanation: "Rationalize the denominator. The result simplifies to 2 + √3." },
-  69: { correctAnswer: "A", explanation: "Expand: 8 times 2 = 16, 8 times −√5 = −8√5, √5 times 2 = 2√5, and √5 times −√5 = −5. The result is 11 − 6√5." },
-  70: { correctAnswer: "D", explanation: "Rationalize the denominator. The expression becomes 3 − √5 all over 2." },
-  71: { correctAnswer: "D", explanation: "This is the same simplification as item 68. Rationalizing gives 2 + √3." },
-  72: { correctAnswer: "C", explanation: "√18 = 3√2 and √50 = 5√2, so the total is 8√2." },
-  73: { correctAnswer: "B", explanation: "Multiply top and bottom by √6 + 2. The denominator becomes 6 − 4 = 2, so the result is 2 times √6 + 2." },
-  74: { correctAnswer: "A", explanation: "Rearrange to 2x² − 5x − 3 < 0. The roots are −1 over 2 and 3, so the solution is between the roots." },
-  75: { correctAnswer: "C", explanation: "For 2x − 3 over x + 1 to be positive, numerator and denominator must have the same sign. The solution is x < −1 or x > 3 over 2." },
-  76: { correctAnswer: "C", explanation: "Solve 5x + 7 > 10x − 13. This gives 20 > 5x, so x < 4." },
-  77: { correctAnswer: "B", explanation: "Move all terms to one side: x² − 5x − 6 is greater than or equal to 0. Factor to x − 6 times x + 1, giving x less than or equal to −1 or x greater than or equal to 6." },
-  78: { correctAnswer: "B", explanation: "Factor x² − 7x + 10 into x − 5 times x − 2. The product is negative between the roots, so 2 < x < 5." },
-  79: { correctAnswer: "D", explanation: "The critical values are x = 2 over 5 and x = 2 over 3. A sign chart shows the expression is non-negative for 2 over 5 less than or equal to x less than 2 over 3." },
-  80: { correctAnswer: "B", explanation: "Multiply by x, which is positive. Then x² − 2x − 15 < 0, so x is between −3 and 5. Since x > 0, the solution is 0 < x < 5." },
-  81: { correctAnswer: "D", explanation: "Expand and solve: x² + 30x + 225 = 64x gives x² − 34x + 225 = 0, so x = 9 or x = 25." },
-  82: { correctAnswer: "C", explanation: "Interpreting the inequality as 3x − 2 over 2x + 1 less than or equal to 0, a sign chart gives −1 over 2 less than x less than or equal to 2 over 3." },
-  83: { correctAnswer: "C", explanation: "Factor 4x − 3x² as x times 4 − 3x. The product is positive when 0 < x < 4 over 3." },
-  84: { correctAnswer: "D", explanation: "Complete the square to find the centre as 5, −1. The other end of the diameter is found by using the centre as the midpoint, giving 8, −5." },
-  85: { correctAnswer: "D", explanation: "Complete the square: x² + y² − 6x + 4y − 12 = 0 becomes x − 3 all squared plus y + 2 all squared = 25, so the centre is 3, −2 and the radius is 5." },
-  86: { correctAnswer: "B", explanation: "The midpoint of A and B is −4, −4. The slope of AB is 1 over 6, so the perpendicular bisector has slope −6. Its equation is 6x + y + 28 = 0." },
-  87: { correctAnswer: "A", explanation: "In the form x − a all squared plus y − b all squared = r², the centre is a, b. Here the centre is 1, −3." },
-  88: { correctAnswer: "C", explanation: "Use the standard form x − 3 all squared plus y + 2 all squared = 16. Expanding gives x² + y² − 6x + 4y − 3 = 0." },
-  89: { correctAnswer: "A", explanation: "Using the length formula and solving for k gives k = 3 or k = −3, so statements I and II are true." },
-  90: { correctAnswer: "A", explanation: "Parallel vectors have equal component ratios. So 4 over 2 = r over −3, giving r = −6." },
-  91: { correctAnswer: "D", explanation: "For vectors 2, 3 and 7, 4, the cosine of the angle is 2 times 7 plus 3 times 4 all over √13 times √65, which matches option D." },
-  92: { correctAnswer: "C", explanation: "The magnitude of 5i + 12j is 13, so the unit vector in the same direction is 1 over 13 times 5i + 12j." },
-  94: { correctAnswer: "A", explanation: "For vectors 2, 5 and −3, 1, the dot product is −1 and the magnitude product is √290. Since the question asks for the acute angle, use cos inverse of 1 over √290." },
-  96: { correctAnswer: "B", explanation: "The dot product is 5 times −4 plus 2 times 10 = −20 + 20 = 0, so the vectors are perpendicular." },
-  97: { correctAnswer: "A", explanation: "Use the identity cos of A minus B minus cos of A plus B = 2 sin A sin B." },
-  98: { correctAnswer: "B", explanation: "If sin θ = 15 over 17, then the reference triangle gives cos θ = 8 over 17. Since θ is obtuse, cosine is negative, so cos θ = −8 over 17." },
-  99: { correctAnswer: "B", explanation: "sin θ + cos θ = 0 means tan θ = −1. The smallest positive solution is 3π over 4." },
-  100: { correctAnswer: "D", explanation: "4 sin² θ − 1 = 0 gives sin θ = plus or minus 1 over 2, which occurs at four angles from 0 to 2π." },
-  101: { correctAnswer: "B", explanation: "Use sin of x minus π over 2 = −cos x. Multiplying by 2 gives −2 cos x." },
-  102: { correctAnswer: "B", explanation: "Since cos 3x lies between −1 and 1, 2 + cos 3x lies between 1 and 3. This matches the intended reading of option B." },
-  103: { correctAnswer: "C", explanation: "Replace cos²x with 1 − sin²x. This gives 2 sin²x − 3 sin x − 2 = 0, so sin x = −1 over 2 and the solutions are 7π over 6 and 11π over 6." },
-  104: { correctAnswer: "B", explanation: "If sin θ = 5 over 13 and θ is obtuse, then cos θ = −12 over 13. So tan θ = 5 over 13 divided by −12 over 13 = −5 over 12." },
-  105: { correctAnswer: "D", explanation: "Use the identity cos of A plus B plus cos of A minus B = 2 cos A cos B." },
-  106: { correctAnswer: "A", explanation: "Since cos 2x = 1 − 2 sin²x and it is also given as 1 − 2s², then sin x = s." },
-  107: { correctAnswer: "A", explanation: "150 degrees is in quadrant II, where tangent is negative. tan 150 degrees = −tan 30 degrees = −1 over √3." },
-  109: { correctAnswer: "B", explanation: "sin θ − cos θ = 0 means tan θ = 1. The smallest positive angle is π over 4." },
-  110: { correctAnswer: "A", explanation: "Use the angle addition formula: sin of α + 45 degrees = sin α cos 45 degrees + cos α sin 45 degrees = 1 over √2 times sin α + cos α." },
-  111: { correctAnswer: "B", explanation: "Convert radians to degrees by multiplying by 180 over π. That gives 4π over 5 times 180 over π = 144 degrees." },
-  113: { correctAnswer: "A", explanation: "Use cos of 45 degrees + 30 degrees. This gives √6 minus √2 all over 4." },
-  115: { correctAnswer: "A", explanation: "Use sin A cos B minus cos A sin B = sin of A minus B. So the expression becomes sin 10 degrees." },
-  117: { correctAnswer: "C", explanation: "sin of π over 2 minus x is cos x, and cos of x + π over 2 is −sin x. So the result is cos x − sin x." },
-  119: { correctAnswer: "B", explanation: "Half the area is 32π, so 1 over 2 times πr² = 32π gives r = 8. The arc length of the semicircle is πr = 8π." },
-  120: { correctAnswer: "B", explanation: "This is the same perpendicular bisector calculation as item 86, so the equation is 6x + y + 28 = 0." },
-  122: { correctAnswer: "D", explanation: "From 3x − y − 5 = 0, y = 3x − 5. Substitute into 7x − 4y + 25 = 0 to get x = 9 and y = 22." },
-  123: { correctAnswer: "C", explanation: "The given line has slope −3. So 8 minus 2 all over 6 minus k = −3, which gives k = 8." },
-  124: { correctAnswer: "D", explanation: "The given line has slope −2. So 8 minus 2 all over 4 minus h = −2, which gives h = 7." },
-  125: { correctAnswer: "B", explanation: "Use y = 1 − x in x² + y² = 5. Solving gives x = 2 or x = −1, so the intersection points are 2, −1 and −1, 2." },
-  126: { correctAnswer: "D", explanation: "Differentiate y = 3x − 2 all cubed using the chain rule. The result is 3 times 3x − 2 squared times 3, which is 9 times 3x − 2 squared." },
-  127: { correctAnswer: "C", explanation: "Use the quotient rule: dy over dx = denominator times derivative of numerator minus numerator times derivative of denominator, all over denominator squared." },
-  128: { correctAnswer: "C", explanation: "This is the same quotient-rule derivative as item 127." },
-  129: { correctAnswer: "B", explanation: "Differentiate y = 3 sin x + 2 to get 3 cos x. At x = π over 3, cos x = 1 over 2, so the value is 3 over 2." },
-  130: { correctAnswer: "C", explanation: "Differentiate y = x times x − 3 all squared. The tangent slope at x = 2 is −3, so the normal slope is −1 over −3, which is 1 over 3." },
-  131: { correctAnswer: "B", explanation: "For y = 4x + 9 over x, first derivative is 4 − 9 over x². Differentiate again to get 18 over x³." },
-  132: { correctAnswer: "A", explanation: "Integrate x² from 0 to z to get z³ over 3. Set this equal to 9, so z³ = 27 and z = 3." },
-  136: { correctAnswer: "B", explanation: "When y = √x is rotated about the x-axis, the volume is π times the integral of y², so π times the integral of x with respect to x." },
-  137: { correctAnswer: "C", explanation: "Let u = 2x + 3. Then du = 2 dx, so the integral becomes 1 over 2 times the integral of u to the fifth power, which is 1 over 12 times 2x + 3 to the sixth power plus C." },
-  138: { correctAnswer: "C", explanation: "Integrate term by term: the integral of 3 sin x is −3 cos x, and the integral of −2 cos x is −2 sin x." },
-  139: { correctAnswer: "D", explanation: "Interpreting the expression as y = √(5 − x), use the chain rule to get dy over dx = −1 over 2√(5 − x), matching option D in the current format." },
-  140: { correctAnswer: "A", explanation: "Use the chain rule on sin of 2x² + 1. The derivative is cos of 2x² + 1 times 4x." },
-  141: { correctAnswer: "A", explanation: "Using the quotient rule gives dy over dx = 1 over 2x − 1 squared. At x = 1, this is 1." },
-  142: { correctAnswer: "C", explanation: "A stationary point is a minimum when the second derivative is positive. Substituting x = −1 gives a positive value, so the point is a minimum turning point." },
-  143: { correctAnswer: "C", explanation: "Take 4 outside the integral: 4 times 6 + 5 = 29." },
-  144: { correctAnswer: "B", explanation: "Area = the integral from 0 to 1 of 2 − x². This gives 2x − x³ over 3 from 0 to 1, which equals 5 over 3." },
-  145: { correctAnswer: "C", explanation: "Volume about the x-axis is π times the integral of y². Squaring x − 1 over 2 x² and integrating from 0 to 2 gives 4π over 15." },
-  146: { correctAnswer: "D", explanation: "Since the derivative of x over 1 + x is 1 over 1 + x squared, the integral is 3 times x over 1 + x from 0 to 2, which equals 2." },
-  147: { correctAnswer: "C", explanation: "Use the product rule on y = x² + 2 times x − 1 cubed. Factor the result to get x − 1 all squared times 5x² − 2x + 6." },
-  150: { correctAnswer: "A", explanation: "There are 4 Wild Draw Four cards out of 108. So the probability of not drawing one is 104 over 108, which simplifies to 26 over 27." },
-  151: { correctAnswer: "D", explanation: "A box-and-whisker plot is useful for showing the spread of a distribution through the quartiles and range." },
-  152: { correctAnswer: "A", explanation: "Using the intended Venn interpretation, the probability of N or G is 0.90, so the complement is 0.10." },
-  153: { correctAnswer: "D", explanation: "Using the intended Venn values, P of N given G is P of N and G divided by P of G, which is 0.35 divided by 0.50 = 0.70." },
-};
-
-const QUESTION_AUDIT_NOTES: Array<{ id: number; note: string }> = [
-  { id: 18, note: "Duplicate/incomplete arithmetic progression item." },
-  { id: 51, note: "Duplicate quadratic equation item." },
-  { id: 147, note: "Bad imported topic label fixed to Calculus." },
-  { id: 151, note: "Statistics stem appears merged with the next prompt and should be split later." },
-  { id: 153, note: "Statistics stem appears truncated and should be cleaned later." },
-];
-
-function buildPatchedQuestion(raw: [number, number, string, string, string, string, string, string]): Question | null {
-  const [id, sourceNumber, rawTopic, stem, A, B, C, D] = raw;
-  const patch = QUESTION_PATCHES[id] ?? {};
-  if (patch.exclude) return null;
-
-  const answerOverride = ANSWER_OVERRIDES[id];
-  const topic = patch.topic ?? normalizeTopic(rawTopic);
-  const subtopic = patch.subtopic ?? topic;
-
-  return {
-    id,
-    sourceNumber,
-    topic,
-    subtopic,
-    difficulty: patch.difficulty ?? "Medium",
-    stem: patch.stem ?? stem,
-    options: {
-      A: patch.options?.A ?? A,
-      B: patch.options?.B ?? B,
-      C: patch.options?.C ?? C,
-      D: patch.options?.D ?? D,
-    },
-    correctAnswer: answerOverride?.correctAnswer ?? patch.correctAnswer ?? null,
-    explanation: answerOverride?.explanation ?? patch.explanation,
-    answerKeyStatus: answerOverride ? "verified" : patch.answerKeyStatus ?? "pending",
-    source: `Item ${sourceNumber}`,
-  };
-}
-
-const QUESTION_BANK: Question[] = RAW_QUESTION_BANK.map(buildPatchedQuestion).filter((question): question is Question => question !== null);
-const AVAILABLE_TOPICS = Array.from(new Set(QUESTION_BANK.map((question) => question.topic))).sort((a, b) => a.localeCompare(b));
-
-const STORAGE_KEY = "teams-testing-app-prototype";
-const ATTEMPTS_KEY = "teams-testing-app-attempts";
-
-const VITE_ENV = (((import.meta as any)?.env) ?? {}) as Record<string, string>;
-const SUPABASE_URL = VITE_ENV.VITE_SUPABASE_URL ?? "";
-const SUPABASE_ANON_KEY = VITE_ENV.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
-const SUPABASE_TABLE = "quiz_attempts";
-const SUPABASE_EXAM_CODE_TABLE = "exam_access_codes";
-const SUPABASE_ENABLED = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
-const TEACHER_ACCESS_PASSWORD = VITE_ENV.VITE_TEACHER_PASSWORD ?? "";
-const PRACTICE_MASTER_PASSCODE = "practice2026";
-const PARENT_ACCESS_CODE = VITE_ENV.VITE_PARENT_ACCESS_CODE ?? "";
-const TEACHER_SESSION_KEY = "teams-testing-app-teacher-access";
-const STUDENT_SESSION_KEY = "teams-testing-app-student-session";
-const EFFECTIVE_TEACHER_PASSWORD = TEACHER_ACCESS_PASSWORD || "mathematics2026";
-const EFFECTIVE_PARENT_ACCESS_CODE = PARENT_ACCESS_CODE || "parent2026";
-
-function generateId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-async function requestAppFullscreen() {
-  const root = document.documentElement as HTMLElement & {
-    webkitRequestFullscreen?: () => Promise<void> | void;
-    msRequestFullscreen?: () => Promise<void> | void;
-  };
-
-  try {
-    if (document.fullscreenElement) return true;
-    if (root.requestFullscreen) {
-      await root.requestFullscreen();
-      return true;
-    }
-    if (root.webkitRequestFullscreen) {
-      await root.webkitRequestFullscreen();
-      return true;
-    }
-    if (root.msRequestFullscreen) {
-      await root.msRequestFullscreen();
-      return true;
-    }
-  } catch {
-    return false;
-  }
-
-  return false;
-}
-
-function shuffleArray<T>(items: T[]) {
-  const copy = [...items];
-  for (let index = copy.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
-  }
-  return copy;
-}
-
-function buildShuffledQuestionSet(questions: Question[], count: number) {
-  return shuffleArray(questions)
-    .slice(0, count)
-    .map((question) => ({
-      ...question,
-      optionOrder: shuffleArray(["A", "B", "C", "D"] as OptionKey[]),
-    }));
-}
-
-function escapeHtml(text: string) {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function plainHtml(text: string) {
-  return escapeHtml(text).split(String.fromCharCode(10)).join("<br />");
-}
-
-function plainHtmlWithPowers(text: string) {
-  const powerPattern = /([A-Za-z0-9]+|\)|\])\^(\([^)]*\)|\{[^}]*\}|[A-Za-z0-9+\-]+)/g;
-  const fractionPattern = /(\([^()]+\)|\[[^\[\]]+\]|[A-Za-z0-9.+\-√πθαβ]+)\/(\([^()]+\)|\[[^\[\]]+\]|[A-Za-z0-9.+\-√πθαβ]+)/g;
-
-  function applyPowers(segment: string) {
-    let html = "";
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-
-    while ((match = powerPattern.exec(segment)) !== null) {
-      const [fullMatch, base, rawExponent] = match;
-      const exponent =
-        (rawExponent.startsWith("(") && rawExponent.endsWith(")")) ||
-        (rawExponent.startsWith("{") && rawExponent.endsWith("}"))
-          ? rawExponent.slice(1, -1)
-          : rawExponent;
-
-      html += plainHtml(segment.slice(lastIndex, match.index));
-      html += `${escapeHtml(base)}<sup>${escapeHtml(exponent)}</sup>`;
-      lastIndex = match.index + fullMatch.length;
-    }
-
-    html += plainHtml(segment.slice(lastIndex));
-    return html;
-  }
-
-  function cleanFractionPart(part: string) {
-    if ((part.startsWith("(") && part.endsWith(")")) || (part.startsWith("[") && part.endsWith("]"))) {
-      return part.slice(1, -1);
-    }
-    return part;
-  }
-
-  let html = "";
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = fractionPattern.exec(text)) !== null) {
-    const [fullMatch, rawNumerator, rawDenominator] = match;
-    const numerator = cleanFractionPart(rawNumerator);
-    const denominator = cleanFractionPart(rawDenominator);
-
-    html += applyPowers(text.slice(lastIndex, match.index));
-    html += `<span class="mx-0.5 inline-flex min-w-[1.8em] flex-col items-center align-middle leading-none"><span class="border-b border-current px-1 pb-0.5">${applyPowers(numerator)}</span><span class="px-1 pt-0.5">${applyPowers(denominator)}</span></span>`;
-    lastIndex = match.index + fullMatch.length;
-  }
-
-  html += applyPowers(text.slice(lastIndex));
-  return html;
-}
-
-function normalizeMathAlphabet(text: string) {
-  const ranges = [
-    { start: 0x1d400, end: 0x1d419, base: 0x41 },
-    { start: 0x1d41a, end: 0x1d433, base: 0x61 },
-    { start: 0x1d434, end: 0x1d44d, base: 0x41 },
-    { start: 0x1d44e, end: 0x1d467, base: 0x61 },
-    { start: 0x1d468, end: 0x1d481, base: 0x41 },
-    { start: 0x1d482, end: 0x1d49b, base: 0x61 },
-    { start: 0x1d5a0, end: 0x1d5b9, base: 0x41 },
-    { start: 0x1d5ba, end: 0x1d5d3, base: 0x61 },
-    { start: 0x1d5d4, end: 0x1d5ed, base: 0x41 },
-    { start: 0x1d5ee, end: 0x1d607, base: 0x61 },
-    { start: 0x1d608, end: 0x1d621, base: 0x41 },
-    { start: 0x1d622, end: 0x1d63b, base: 0x61 },
-    { start: 0x1d63c, end: 0x1d655, base: 0x41 },
-    { start: 0x1d656, end: 0x1d66f, base: 0x61 },
-    { start: 0x1d670, end: 0x1d689, base: 0x41 },
-    { start: 0x1d68a, end: 0x1d6a3, base: 0x61 },
-  ];
-
-  return Array.from(text)
-    .map((character) => {
-      const codePoint = character.codePointAt(0);
-      if (!codePoint) return character;
-      const match = ranges.find((range) => codePoint >= range.start && codePoint <= range.end);
-      return match ? String.fromCodePoint(match.base + (codePoint - match.start)) : character;
-    })
-    .join("");
-}
-
-
-
-function renderRichText(text: string) {
-  const normalizedText = normalizeMathAlphabet(text);
-
-  if (!PROFESSIONAL_EQUATION_RENDERING) {
-    return { __html: plainHtmlWithPowers(normalizedText) };
-  }
-
-  const mathPattern = /(\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]|\$[^$]+\$)/g;
-  const parts = normalizedText.split(mathPattern);
-
-  const html = parts
-    .map((part) => {
-      if (!part) return "";
-
-      const isInlineLatex = part.startsWith("\\(") && part.endsWith("\\)");
-      const isDisplayLatex = part.startsWith("\\[") && part.endsWith("\\]");
-      const isDollarLatex = part.startsWith("$") && part.endsWith("$");
-
-      if (!isInlineLatex && !isDisplayLatex && !isDollarLatex) {
-        return plainHtmlWithPowers(part);
-      }
-
-      const expression = isInlineLatex || isDisplayLatex ? part.slice(2, -2) : part.slice(1, -1);
-
-      try {
-        return katex.renderToString(expression, {
-          throwOnError: false,
-          displayMode: isDisplayLatex,
-          strict: false,
-        });
-      } catch {
-        return plainHtmlWithPowers(part);
-      }
-    })
-    .join("");
-
-  return { __html: html || plainHtmlWithPowers(normalizedText) };
-}
-
-function RichText({ text, className = "" }: { text: string; className?: string }) {
-  return <span className={cn("whitespace-pre-wrap", className)} dangerouslySetInnerHTML={renderRichText(text)} />;
-}
-
-function readJson<T>(key: string, fallback: T): T {
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function writeJson<T>(key: string, value: T) {
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // ignore local storage failures in preview mode
-  }
-}
-
-function getStoredAttempts(): Attempt[] {
-  return readJson<Attempt[]>(ATTEMPTS_KEY, []);
-}
-
-function setStoredAttempts(attempts: Attempt[]) {
-  writeJson(ATTEMPTS_KEY, attempts);
-}
-
-function mergeAttempts(primary: Attempt[], secondary: Attempt[]) {
-  const map = new Map<string, Attempt>();
-  [...secondary, ...primary].forEach((attempt) => {
-    map.set(attempt.id, attempt);
-  });
-  return Array.from(map.values()).sort((a, b) => new Date(b.submittedAt || b.startedAt).getTime() - new Date(a.submittedAt || a.startedAt).getTime());
-}
-
-function persistStudentSession(session: StudentAuthSession | null) {
-  if (!session) {
-    try {
-      window.localStorage.removeItem(STUDENT_SESSION_KEY);
-    } catch {
-      // ignore
-    }
-    return;
-  }
-  writeJson(STUDENT_SESSION_KEY, session);
-}
-
-function restoreStudentSession(): StudentAuthSession | null {
-  return readJson<StudentAuthSession | null>(STUDENT_SESSION_KEY, null);
-}
-
-function persistTeacherUnlocked(unlocked: boolean) {
-  try {
-    if (unlocked) {
-      window.localStorage.setItem(TEACHER_SESSION_KEY, "1");
-    } else {
-      window.localStorage.removeItem(TEACHER_SESSION_KEY);
-    }
-  } catch {
-    // ignore
-  }
-}
-
-function restoreTeacherUnlocked() {
-  try {
-    return window.localStorage.getItem(TEACHER_SESSION_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-async function fetchSupabase(path: string, init: RequestInit = {}) {
-  return fetch(`${SUPABASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      ...(init.headers ?? {}),
-    },
-  });
-}
-
-function getMagicLinkRedirectUrl() {
-  return `${window.location.origin}${window.location.pathname}`;
-}
-
-async function exchangeMagicLinkSessionFromUrl(): Promise<StudentAuthSession | null> {
-  if (!SUPABASE_ENABLED) return null;
-
-  const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
-  const hashParams = new URLSearchParams(rawHash);
-  const accessToken = hashParams.get("access_token");
-  if (!accessToken) return null;
-
-  const refreshToken = hashParams.get("refresh_token") || undefined;
-  const response = await fetchSupabase(`/auth/v1/user`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok || !data?.email) {
-    throw new Error(data?.msg || data?.message || "Unable to complete magic link sign-in.");
-  }
-
-  window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.search}`);
-
-  return {
-    accessToken,
-    refreshToken,
-    email: data.email,
-    userId: data.id,
-  };
-}
-
-async function sendMagicLinkToStudent(email: string): Promise<{ session?: StudentAuthSession; message: string }> {
-  if (!SUPABASE_ENABLED) {
-    return {
-      session: {
-        accessToken: "local-demo-token",
-        email,
-        userId: "local-demo-user",
-      },
-      message: "Local preview session opened instantly.",
-    };
-  }
-
-  const response = await fetchSupabase(`/auth/v1/otp`, {
-    method: "POST",
-    body: JSON.stringify({
-      email,
-      create_user: true,
-      email_redirect_to: getMagicLinkRedirectUrl(),
-    }),
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data?.msg || data?.message || "Unable to send the magic link.");
-  }
-
-  return {
-    message: `Magic link sent to ${email}. Check your email and open the link on this device.`,
-  };
-}
-
-async function consumeExamAccessCode(studentEmail: string, code: string) {
-  if (!SUPABASE_ENABLED || !code.trim()) return;
-
-  const lookup = await fetchSupabase(`/rest/v1/${SUPABASE_EXAM_CODE_TABLE}?select=code,used_at&code=eq.${encodeURIComponent(code)}&limit=1`);
-  const rows = await lookup.json().catch(() => []);
-  if (!lookup.ok || !Array.isArray(rows) || rows.length === 0) {
-    throw new Error("That access code was not found.");
-  }
-  if (rows[0]?.used_at) {
-    throw new Error("That access code has already been used.");
-  }
-
-  const update = await fetchSupabase(`/rest/v1/${SUPABASE_EXAM_CODE_TABLE}?code=eq.${encodeURIComponent(code)}`, {
-    method: "PATCH",
-    headers: {
-      Prefer: "return=minimal",
-    },
-    body: JSON.stringify({ used_at: new Date().toISOString(), student_email: studentEmail || null }),
-  });
-
-  if (!update.ok) {
-    throw new Error("Unable to activate that access code right now.");
-  }
-}
-
-function mapAttemptFromRow(row: any): Attempt | null {
-  const payload = row?.payload && typeof row.payload === "object" ? (row.payload as Attempt) : null;
-
-  if (payload) {
-    return {
-      ...payload,
-      id: payload.id || row.id,
-      submittedAt: payload.submittedAt || row.submitted_at || payload.startedAt,
-      teacherFeedback: row.teacher_feedback ?? payload.teacherFeedback ?? "",
-    };
-  }
-
-  if (!row?.id) return null;
-
-  return {
-    id: row.id,
-    studentName: row.student_name || "Student",
-    schoolName: "",
-    studentEmail: row.studentEmail || row.student_email || "",
-    studentAuthUserId: row.student_id || "",
-    mode: row.mode || "practice",
-    selectedTopics: [],
-    questionCount: 0,
-    startedAt: row.submitted_at || new Date().toISOString(),
-    submittedAt: row.submitted_at || new Date().toISOString(),
-    durationMinutes: 0,
-    answers: [],
-    questions: [],
-    score: row.score || 0,
-    percentage: row.percentage || 0,
-    scoredQuestionCount: row.scored_question_count || 0,
-    integrityEvents: [],
-    teacherFeedback: row.teacher_feedback || "",
-  };
-}
-
-function buildSupabaseAttemptRow(attempt: Attempt) {
-  return {
-    id: attempt.id,
-    student_name: attempt.studentName,
-    mode: attempt.mode,
-    percentage: attempt.percentage,
-    submitted_at: attempt.submittedAt || new Date().toISOString(),
-    teacher_feedback: attempt.teacherFeedback || null,
-    payload: attempt,
-  };
-}
-
-async function getCompletedAttemptsFromDatabase(): Promise<Attempt[]> {
-  const localAttempts = getStoredAttempts();
-  if (!SUPABASE_ENABLED) return localAttempts;
-
-  try {
-    const response = await fetchSupabase(`/rest/v1/${SUPABASE_TABLE}?select=id,payload,submitted_at,teacher_feedback&order=submitted_at.desc`);
-    const rows = await response.json().catch(() => []);
-    if (!response.ok || !Array.isArray(rows)) {
-      return localAttempts;
-    }
-    const remoteAttempts = rows.map(mapAttemptFromRow).filter((attempt): attempt is Attempt => attempt !== null);
-    return mergeAttempts(remoteAttempts, localAttempts);
-  } catch {
-    return localAttempts;
-  }
-}
-
-function saveCompletedAttempt(attempt: Attempt) {
-  const currentAttempts = getStoredAttempts();
-  const updated = mergeAttempts([attempt], currentAttempts);
-  setStoredAttempts(updated);
-  writeJson(STORAGE_KEY, attempt);
-}
-
-async function saveCompletedAttemptToDatabase(attempt: Attempt) {
-  if (!SUPABASE_ENABLED) return;
-
-  const row = buildSupabaseAttemptRow(attempt);
-
-  const response = await fetchSupabase(`/rest/v1/${SUPABASE_TABLE}?on_conflict=id`, {
-    method: "POST",
-    headers: {
-      Prefer: "resolution=merge-duplicates,return=minimal",
-    },
-    body: JSON.stringify(row),
-  });
-
-  if (!response.ok) {
-    const details = await response.text().catch(() => "");
-    console.error("Supabase insert error", response.status, details);
-    throw new Error(`Unable to save quiz result (${response.status}).`);
-  }
-}
-
-async function saveTeacherFeedbackToDatabase(attemptId: string, feedback: string) {
-  const attempts = getStoredAttempts();
-  const target = attempts.find((attempt) => attempt.id === attemptId);
-  if (!target) return;
-
-  const updatedAttempt: Attempt = { ...target, teacherFeedback: feedback };
-  saveCompletedAttempt(updatedAttempt);
-
-  if (!SUPABASE_ENABLED) return;
-
-  const response = await fetchSupabase(`/rest/v1/${SUPABASE_TABLE}?id=eq.${encodeURIComponent(attemptId)}`, {
-    method: "PATCH",
-    headers: {
-      Prefer: "return=minimal",
-    },
-    body: JSON.stringify({
-      teacher_feedback: feedback,
-      payload: updatedAttempt,
-    }),
-  });
-
-  if (!response.ok) {
-    const details = await response.text().catch(() => "");
-    console.error("Supabase feedback error", response.status, details);
-  }
-}
-
-function summarizeIntegrity(type: IntegrityEventType) {
-  return type.replaceAll("_", " ");
-}
-
-function TeacherAccessGate({
-  password,
-  onPasswordChange,
-  onUnlock,
-  onBack,
-}: {
-  password: string;
-  onPasswordChange: (value: string) => void;
-  onUnlock: () => void;
-  onBack: () => void;
-}) {
-  return (
-    <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr] items-start">
-      <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-        <CardHeader>
-          <CardTitle className="text-xl">Teacher access</CardTitle>
-          <CardDescription>Enter the teacher password to review quiz attempts and leave feedback.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Password</Label>
-            <Input type="password" value={password} onChange={(e) => onPasswordChange(e.target.value)} placeholder="Enter teacher password" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={onUnlock}>Open teacher view</Button>
-            <Button variant="outline" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={onBack}>Back</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-        <CardHeader>
-          <CardTitle className="text-xl">Teacher tools</CardTitle>
-          <CardDescription>Use the teacher view to inspect results, integrity notes, and add written feedback for students.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-700">
-          <div>• Review all submitted attempts.</div>
-          <div>• See topic selections, timing, and score percentage.</div>
-          <div>• Save feedback notes that parents and students can read later.</div>
-          <div>• Use the exam code table to control supervised tests when Supabase is enabled.</div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function ParentAccessGate({
-  code,
-  onCodeChange,
-  onUnlock,
-  onBack,
-}: {
-  code: string;
-  onCodeChange: (value: string) => void;
-  onUnlock: () => void;
-  onBack: () => void;
-}) {
-  return (
-    <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr] items-start">
-      <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-        <CardHeader>
-          <CardTitle className="text-xl">Parent access</CardTitle>
-          <CardDescription>Enter the parent access code to view student results.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Parent access code</Label>
-            <Input type="password" value={code} onChange={(e) => onCodeChange(e.target.value)} placeholder="Enter parent access code" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={onUnlock}>Open parent view</Button>
-            <Button variant="outline" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={onBack}>Back</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-        <CardHeader>
-          <CardTitle className="text-xl">Parent security</CardTitle>
-          <CardDescription>This keeps parent reports separate from the student screen.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-700">
-          <div>• Parents must enter the access code before results can be searched.</div>
-          <div>• The code can be set with VITE_PARENT_ACCESS_CODE on the live site.</div>
-          <div>• Preview fallback code: <span className="font-semibold text-slate-900">parent2026</span>.</div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function ParentPanel() {
-  const [lookupEmail, setLookupEmail] = useState("");
-  const [lookupName, setLookupName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [matchedAttempts, setMatchedAttempts] = useState<Attempt[]>([]);
-
-  const summary = useMemo(() => {
-    const total = matchedAttempts.length;
-    const average = total ? Math.round(matchedAttempts.reduce((sum, attempt) => sum + attempt.percentage, 0) / total) : 0;
-    const best = total ? Math.max(...matchedAttempts.map((attempt) => attempt.percentage)) : 0;
-    return { total, average, best };
-  }, [matchedAttempts]);
-
-  async function loadParentResults() {
-    if (!lookupEmail.trim() && !lookupName.trim()) {
-      setMessage("Enter the student's email address or full name.");
-      return;
-    }
-
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const loadedAttempts = await getCompletedAttemptsFromDatabase();
-      const email = lookupEmail.trim().toLowerCase();
-      const name = lookupName.trim().toLowerCase();
-
-      const filtered = loadedAttempts
-        .filter((attempt) => {
-          const attemptEmail = (attempt.studentEmail || "").trim().toLowerCase();
-          const attemptName = (attempt.studentName || "").trim().toLowerCase();
-          const emailMatch = email ? attemptEmail === email : true;
-          const nameMatch = name ? attemptName.includes(name) : true;
-          return emailMatch && nameMatch;
-        })
-        .sort((a, b) => new Date(b.submittedAt || b.startedAt).getTime() - new Date(a.submittedAt || a.startedAt).getTime());
-
-      setMatchedAttempts(filtered);
-      setMessage(filtered.length ? "" : "No submitted quiz results were found for those details yet.");
-    } catch (error) {
-      console.error("Parent lookup failed.", error);
-      setMatchedAttempts([]);
-      setMessage("Unable to load student results right now. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function clearLookup() {
-    setLookupEmail("");
-    setLookupName("");
-    setMatchedAttempts([]);
-    setMessage("");
-  }
-
-  return (
-    <div className="space-y-4">
-      {showExamSecurityLock ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4">
-          <Card className="w-full max-w-lg rounded-2xl border border-white/10 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.28)]">
-            <CardHeader>
-              <CardTitle className="text-xl">Exam security check</CardTitle>
-              <CardDescription>Fullscreen is required for exam mode. Return to fullscreen to continue.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-sm border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-                Your attempt has been flagged because fullscreen was exited during the exam.
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => void requestAppFullscreen()}>
-                  Return to fullscreen
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      ) : null}
-      <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr] items-start">
-        <Card className="relative z-10 rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-          <CardHeader>
-            <CardTitle className="text-xl">Parent view</CardTitle>
-            <CardDescription>Look up a student's completed quizzes to see scores, feedback, and progress updates.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Student email address</Label>
-              <Input
-                type="email"
-                value={lookupEmail}
-                onChange={(e) => setLookupEmail(e.target.value)}
-                placeholder="Enter the student's email"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Student name</Label>
-              <Input
-                value={lookupName}
-                onChange={(e) => setLookupName(e.target.value)}
-                placeholder="Optional: enter the student's name"
-              />
-            </div>
-
-            {message ? <div className="rounded-sm border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">{message}</div> : null}
-
-            <div className="relative z-10 flex flex-wrap gap-2 pointer-events-auto">
-              <Button type="button" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)] pointer-events-auto" onClick={() => void loadParentResults()} disabled={loading}>
-                {loading ? "Loading..." : "View student results"}
-              </Button>
-              <Button type="button" variant="outline" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)] pointer-events-auto" onClick={clearLookup}>
-                Clear
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="relative z-10 rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-          <CardHeader>
-            <CardTitle className="text-xl">What parents can see</CardTitle>
-            <CardDescription>This view is read-only and designed for quick progress checks.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm text-slate-700">
-            <div>• Completed quiz attempts for one student.</div>
-            <div>• Scores, percentages, and submission dates.</div>
-            <div>• Teacher feedback that was saved after review.</div>
-            <div>• Integrity flag counts for each attempt.</div>
-            <div>• A quick summary of recent progress.</div>
-            <div className="rounded-sm border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900">
-              This is a simple parent view for reporting only. For a public release, add parent accounts or secure parent access codes.
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {matchedAttempts.length > 0 ? (
-        <Fragment>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-              <CardContent className="p-5">
-                <div className="text-sm text-slate-500">Completed quizzes</div>
-                <div className="mt-2 text-3xl font-bold">{summary.total}</div>
-              </CardContent>
-            </Card>
-            <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-              <CardContent className="p-5">
-                <div className="text-sm text-slate-500">Average score</div>
-                <div className="mt-2 text-3xl font-bold">{summary.average}%</div>
-              </CardContent>
-            </Card>
-            <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-              <CardContent className="p-5">
-                <div className="text-sm text-slate-500">Best score</div>
-                <div className="mt-2 text-3xl font-bold">{summary.best}%</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-4">
-            {matchedAttempts.map((attempt) => (
-              <Card key={attempt.id} className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-                <CardHeader>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <CardTitle className="text-xl">{attempt.studentName}</CardTitle>
-                      <CardDescription>
-                        {attempt.studentEmail || "No email saved"}
-                        {attempt.schoolName ? ` · ${attempt.schoolName}` : ""}
-                        {attempt.submittedAt ? ` · Submitted ${new Date(attempt.submittedAt).toLocaleString()}` : ""}
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>{attempt.mode}</Badge>
-                      <Badge variant="secondary">{attempt.percentage}%</Badge>
-                      <Badge variant={attempt.integrityEvents.length ? "destructive" : "outline"}>{attempt.integrityEvents.length} flags</Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-3 md:grid-cols-3">
-                    <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                      <div className="text-slate-500">Score</div>
-                      <div className="mt-1 text-2xl font-semibold text-slate-900">
-                        {`${attempt.score}/${attempt.questionCount || attempt.questions.length}`}
-                      </div>
-                    </div>
-                    <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                      <div className="text-slate-500">Topics</div>
-                      <div className="mt-1 font-medium text-slate-900">{attempt.selectedTopics.join(", ")}</div>
-                    </div>
-                    <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                      <div className="text-slate-500">Questions</div>
-                      <div className="mt-1 font-medium text-slate-900">{attempt.questionCount}</div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-sm border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                    <div className="font-medium text-slate-900">Teacher feedback</div>
-                    <div className="mt-2">{attempt.teacherFeedback?.trim() ? attempt.teacherFeedback : "No teacher feedback has been added yet."}</div>
-                  </div>
-
-                  {attempt.integrityEvents.length > 0 ? (
-                    <div className="rounded-sm border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                      <div className="font-medium">Integrity notes</div>
-                      <div className="mt-2 space-y-1">
-                        {attempt.integrityEvents.map((event, index) => (
-                          <div key={`${event.at}-${index}`}>• {summarizeIntegrity(event.type)} — {event.details}</div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </Fragment>
-      ) : null}
-    </div>
-  );
-}
-
-function TeacherPanel() {
-  const [attempts, setAttempts] = useState<Attempt[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [message, setMessage] = useState("");
-
-  async function loadAttempts() {
-    setLoading(true);
-    setMessage("");
-    try {
-      const loaded = await getCompletedAttemptsFromDatabase();
-      setAttempts(loaded);
-      setDrafts(
-        loaded.reduce<Record<string, string>>((acc, attempt) => {
-          acc[attempt.id] = attempt.teacherFeedback || "";
-          return acc;
-        }, {})
-      );
-    } catch (error) {
-      console.error(error);
-      setMessage("Unable to load attempts right now.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    void loadAttempts();
-  }, []);
-
-  async function saveFeedback(attemptId: string) {
-    const feedback = drafts[attemptId] || "";
-    await saveTeacherFeedbackToDatabase(attemptId, feedback);
-    setAttempts((current) => current.map((attempt) => (attempt.id === attemptId ? { ...attempt, teacherFeedback: feedback } : attempt)));
-    setMessage("Feedback saved.");
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">Teacher dashboard</h2>
-          <p className="text-sm text-slate-600">Review completed attempts and leave written feedback.</p>
-        </div>
-        <Button variant="outline" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => void loadAttempts()}>
-          Refresh attempts
-        </Button>
-      </div>
-
-      {message ? <div className="rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">{message}</div> : null}
-      {loading ? <div className="rounded-md border border-slate-200 bg-white p-6 text-sm text-slate-600">Loading attempts...</div> : null}
-
-      {!loading && attempts.length === 0 ? (
-        <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-          <CardContent className="p-6 text-sm text-slate-600">No submitted quiz attempts yet.</CardContent>
-        </Card>
-      ) : null}
-
-      <div className="space-y-4">
-        {attempts.map((attempt) => (
-          <Card key={attempt.id} className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-            <CardHeader>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <CardTitle className="text-xl">{attempt.studentName}</CardTitle>
-                  <CardDescription>
-                    {attempt.studentEmail || "No email saved"}
-                    {attempt.schoolName ? ` · ${attempt.schoolName}` : ""}
-                    {attempt.submittedAt ? ` · Submitted ${new Date(attempt.submittedAt).toLocaleString()}` : ""}
-                  </CardDescription>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge>{attempt.mode}</Badge>
-                  <Badge variant="secondary">{attempt.percentage}%</Badge>
-                  <Badge variant={attempt.integrityEvents.length ? "destructive" : "outline"}>{attempt.integrityEvents.length} flags</Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-3 md:grid-cols-3">
-                <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                  <div className="text-slate-500">Score</div>
-                  <div className="mt-1 text-2xl font-semibold text-slate-900">
-                    {`${attempt.score}/${attempt.questionCount || attempt.questions.length}`}
-                  </div>
-                </div>
-                <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                  <div className="text-slate-500">Topics</div>
-                  <div className="mt-1 font-medium text-slate-900">{attempt.selectedTopics.join(", ")}</div>
-                </div>
-                <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                  <div className="text-slate-500">Duration</div>
-                  <div className="mt-1 font-medium text-slate-900">{attempt.durationMinutes} min</div>
-                </div>
-              </div>
-
-              {attempt.integrityEvents.length > 0 ? (
-                <div className="rounded-sm border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                  <div className="font-medium">Integrity notes</div>
-                  <div className="mt-2 space-y-1">
-                    {attempt.integrityEvents.map((event, index) => (
-                      <div key={`${event.at}-${index}`}>• {summarizeIntegrity(event.type)} — {event.details}</div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="space-y-2">
-                <Label>Teacher feedback</Label>
-                <Textarea
-                  value={drafts[attempt.id] || ""}
-                  onChange={(e) => setDrafts((current) => ({ ...current, [attempt.id]: e.target.value }))}
-                  placeholder="Write feedback for this student"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => void saveFeedback(attempt.id)}>
-                  Save feedback
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function StudentPanel() {
-  const [studentEmail, setStudentEmail] = useState("");
-  const [studentName, setStudentName] = useState("");
-  const [schoolName, setSchoolName] = useState("");
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [mode, setMode] = useState<Mode>("practice");
-  const [questionCount, setQuestionCount] = useState("10");
-  const [examCode, setExamCode] = useState("");
-  const [examRequestMessage, setExamRequestMessage] = useState("");
-
-  const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answersByQuestion, setAnswersByQuestion] = useState<Record<number, AttemptAnswer>>({});
-  const [startedAt, setStartedAt] = useState<string | null>(null);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [integrityEvents, setIntegrityEvents] = useState<IntegrityEvent[]>([]);
-  const [submittedAttempt, setSubmittedAttempt] = useState<Attempt | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
-  const [showExamSecurityLock, setShowExamSecurityLock] = useState(false);
-
-  const timerRef = useRef<number | null>(null);
-  const questionEnterRef = useRef<number>(Date.now());
-
-  useEffect(() => {
-    if (mode !== "exam") {
-      setExamRequestMessage("");
-    }
-    if (mode === "trial") {
-      setExamCode("");
-    }
-  }, [mode]);
-
-  useEffect(() => {
-    if (!startedAt || submittedAttempt) return;
-    timerRef.current = window.setInterval(() => setElapsedSeconds((value) => value + 1), 1000);
-    return () => {
-      if (timerRef.current !== null) {
-        window.clearInterval(timerRef.current);
-      }
-    };
-  }, [startedAt, submittedAttempt]);
-
-  useEffect(() => {
-    if (!startedAt || submittedAttempt) return;
-    const onVisibilityChange = () => {
-      setIntegrityEvents((current) => [
-        ...current,
-        {
-          type: document.hidden ? "tab_blur" : "tab_focus",
-          at: new Date().toISOString(),
-          details: document.hidden ? "Student switched away from the quiz tab." : "Student returned to the quiz tab.",
-        },
-      ]);
+    const ANSWER_KEY = {1:'C',2:'D',3:'C',4:'A',5:'A',6:'A',7:'A',8:'D',9:'A',10:'C',11:'D',12:'C',13:'A',14:'D',15:'B',16:'B',17:'C',19:'C',20:'B',21:'D',22:'A',23:'B',24:'D',25:'C',26:'A',27:'A',28:'C',29:'B',30:'D',31:'C',32:'C',33:'D',34:'D',35:'A',36:'B',37:'A',38:'C',39:'C',40:'A',41:'A',42:'B',43:'A',44:'C',45:'B',46:'B',47:'B',48:'C',49:'C',50:'A',52:'D',53:'C',54:'B',55:'B',57:'C',58:'D',59:'C',60:'C',62:'D',63:'C',64:'B',65:'C',66:'C',67:'C',68:'D',69:'A',70:'D',71:'D',72:'C',73:'B',74:'A',75:'C',76:'C',77:'B',78:'B',79:'D',80:'B',81:'D',82:'C',83:'C',84:'D',85:'D',86:'B',87:'A',88:'C',89:'A',90:'A',91:'D',92:'C',94:'A',96:'B',97:'A',98:'B',99:'B',100:'D',101:'B',102:'B',103:'C',104:'B',105:'D',106:'A',107:'A',109:'B',110:'A',111:'B',113:'A',115:'A',116:'B',117:'C',119:'B',120:'B',122:'D',123:'C',124:'D',125:'B',126:'D',127:'C',128:'C',129:'B',130:'C',131:'B',132:'A',135:'D',136:'B',137:'C',138:'C',139:'D',140:'A',141:'A',142:'C',143:'C',144:'B',145:'C',146:'D',147:'C',148:'B',150:'A',151:'D',152:'A',153:'D'};
+    const EXCLUDED_IDS = new Set([18, 51]);
+    const AUDIT_NOTES = [
+      'Items 18 and 51 are hidden because they were marked duplicate/incomplete in the original app.',
+      'Some figure/table-dependent questions remain unscored until diagrams or tables are added.',
+      'Exam mode is fixed at 45 questions and 90 minutes.',
+      'Optional record syncing uses a private HTTP endpoint. Local browser storage remains the offline fallback.'
+    ];
+    const STORAGE_ATTEMPTS = 'csec-addmaths-static-attempts';
+    const STORAGE_TEACHER = 'csec-addmaths-static-teacher-unlocked';
+    const STORAGE_FLOW_URL = 'csec-addmaths-record-sync-url';
+    const STORAGE_FLOW_URL_DISABLED = 'csec-addmaths-record-sync-url-disabled';
+    const DEFAULT_RECORD_SYNC_URL = ''; // Optional record sync endpoint can be added from the teacher dashboard.
+    const decodeAccessValue = (value) => atob(value);
+    const PARENT_CODE = decodeAccessValue('cGFyZW50MjAyNg==');
+    const TEACHER_CODE = decodeAccessValue('bWF0aGVtYXRpY3MyMDI2');
+    const PRACTICE_CODE = decodeAccessValue('cHJhY3RpY2UyMDI2');
+    const EXAM_QUESTION_COUNT = 45;
+    const EXAM_DURATION_SECONDS = 90 * 60;
+
+    const state = {
+      role: 'student',
+      parentUnlocked: false,
+      teacherUnlocked: localStorage.getItem(STORAGE_TEACHER) === '1',
+      setup: { name: '', email: '', school: '', mode: 'practice', count: 10, code: '', selectedTopics: [] },
+      quiz: null,
+      timer: null,
+      startedAt: null,
+      elapsed: 0,
     };
 
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, [startedAt, submittedAttempt]);
+    function buildQuestion(row) {
+      const [id, sourceNumber, topic, stem, A, B, C, D] = row;
+      if (EXCLUDED_IDS.has(id)) return null;
+      return {
+        id, sourceNumber,
+        topic: id === 147 ? 'Calculus' : topic,
+        subtopic: id === 147 ? 'Calculus' : topic,
+        stem: id === 72 ? 'The value of √18 + √50 is' : stem,
+        options: { A, B, C, D },
+        correctAnswer: ANSWER_KEY[id] || null,
+        source: `Item ${sourceNumber}`
+      };
+    }
+    const QUESTION_BANK = RAW_QUESTION_BANK.map(buildQuestion).filter(Boolean);
+    const AVAILABLE_TOPICS = [...new Set(QUESTION_BANK.map(q => q.topic))].sort((a,b) => a.localeCompare(b));
 
-  useEffect(() => {
-    if (!startedAt || submittedAttempt || mode !== "exam") return;
-
-    const addIntegrityEvent = (type: IntegrityEventType, details: string) => {
-      setIntegrityEvents((current) => [
-        ...current,
-        {
-          type,
-          at: new Date().toISOString(),
-          details,
-        },
-      ]);
-    };
-
-    const onFullscreenChange = () => {
-      const inFullscreen = Boolean(document.fullscreenElement || (document as any).webkitFullscreenElement);
-      if (!inFullscreen) {
-        setShowExamSecurityLock(true);
-        addIntegrityEvent("fullscreen_exit", "Student exited fullscreen during the exam.");
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+    const escapeHtml = (value = '') => String(value)
+      .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+    function rich(text = '') {
+      let html = escapeHtml(text);
+      html = html.replace(/([A-Za-z0-9\)\]])\^\(?([A-Za-z0-9+\-]+)\)?/g, '$1<sup>$2</sup>');
+      html = html.replace(/\n/g, '<br>');
+      return html;
+    }
+    function readAttempts() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_ATTEMPTS) || '[]'); } catch { return []; }
+    }
+    function writeAttempts(attempts) { localStorage.setItem(STORAGE_ATTEMPTS, JSON.stringify(attempts)); }
+    function saveAttempt(attempt) {
+      const attempts = readAttempts().filter(item => item.id !== attempt.id);
+      attempts.unshift(attempt);
+      writeAttempts(attempts);
+      saveAttemptToRecordSync(attempt).catch(error => {
+        console.warn('Online save failed; kept locally.', error);
+      });
+    }
+    function mergeAttempts(incoming = [], existing = readAttempts()) {
+      const map = new Map();
+      [...incoming, ...existing].forEach(attempt => {
+        if (!attempt) return;
+        const safeId = attempt.id || id();
+        map.set(safeId, { ...attempt, id: safeId });
+      });
+      return [...map.values()].sort((a, b) => new Date(b.submittedAt || b.startedAt || 0) - new Date(a.submittedAt || a.startedAt || 0));
+    }
+    function getRecordSyncUrl() {
+      if (localStorage.getItem(STORAGE_FLOW_URL_DISABLED) === '1') return '';
+      return localStorage.getItem(STORAGE_FLOW_URL) || DEFAULT_RECORD_SYNC_URL;
+    }
+    function setRecordSyncUrl(url) {
+      if (url && url.trim()) {
+        localStorage.setItem(STORAGE_FLOW_URL, url.trim());
+        localStorage.removeItem(STORAGE_FLOW_URL_DISABLED);
       } else {
-        setShowExamSecurityLock(false);
-      }
-    };
-
-    const blockAction = (event: Event, type: IntegrityEventType, details: string) => {
-      event.preventDefault();
-      addIntegrityEvent(type, details);
-    };
-
-    const onContextMenu = (event: Event) => blockAction(event, "blocked_action", "Right-click was blocked during the exam.");
-    const onCopy = (event: Event) => blockAction(event, "blocked_action", "Copy was blocked during the exam.");
-    const onCut = (event: Event) => blockAction(event, "blocked_action", "Cut was blocked during the exam.");
-    const onPaste = (event: Event) => blockAction(event, "blocked_action", "Paste was blocked during the exam.");
-    const onKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
-      const blockedShortcut = (event.ctrlKey || event.metaKey) && ["c", "v", "x", "a", "p", "s"].includes(key);
-      const devtoolsShortcut = key === "f12" || ((event.ctrlKey || event.metaKey) && event.shiftKey && ["i", "j", "c"].includes(key));
-
-      if (blockedShortcut || devtoolsShortcut) {
-        event.preventDefault();
-        addIntegrityEvent("blocked_shortcut", `Blocked keyboard shortcut: ${event.key}`);
-      }
-    };
-
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-    document.addEventListener("contextmenu", onContextMenu);
-    document.addEventListener("copy", onCopy);
-    document.addEventListener("cut", onCut);
-    document.addEventListener("paste", onPaste);
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.removeEventListener("fullscreenchange", onFullscreenChange);
-      document.removeEventListener("contextmenu", onContextMenu);
-      document.removeEventListener("copy", onCopy);
-      document.removeEventListener("cut", onCut);
-      document.removeEventListener("paste", onPaste);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [startedAt, submittedAttempt, mode]);
-
-  const currentQuestion = quizQuestions[currentIndex];
-
-  function toggleTopic(topic: string) {
-    setSelectedTopics((current) => (current.includes(topic) ? current.filter((item) => item !== topic) : [...current, topic]));
-  }
-
-  function requestExamCode() {
-    if (!studentName.trim()) {
-      window.alert("Enter your name before requesting an exam code.");
-      return;
-    }
-    if (!studentEmail.trim()) {
-      window.alert("Enter your email before requesting an exam code.");
-      return;
-    }
-    setExamRequestMessage(`Exam code request ready for ${studentName.trim()} (${studentEmail.trim()}). Give this student an exam code to continue.`);
-  }
-
-  function commitCurrentQuestionTime() {
-    if (!currentQuestion) return;
-    const delta = Math.max(0, Math.round((Date.now() - questionEnterRef.current) / 1000));
-    if (delta === 0) return;
-    setAnswersByQuestion((current) => {
-      const existing = current[currentQuestion.id] ?? {
-        questionId: currentQuestion.id,
-        changedCount: 0,
-        timeSpentSeconds: 0,
-      };
-      return {
-        ...current,
-        [currentQuestion.id]: {
-          ...existing,
-          timeSpentSeconds: existing.timeSpentSeconds + delta,
-        },
-      };
-    });
-    questionEnterRef.current = Date.now();
-  }
-
-  function goToQuestion(index: number) {
-    commitCurrentQuestionTime();
-    setCurrentIndex(index);
-    questionEnterRef.current = Date.now();
-  }
-
-  function selectAnswer(option: OptionKey) {
-    if (!currentQuestion || submittedAttempt) return;
-    setAnswersByQuestion((current) => {
-      const existing = current[currentQuestion.id] ?? {
-        questionId: currentQuestion.id,
-        changedCount: 0,
-        timeSpentSeconds: 0,
-      };
-      const nextChangedCount = existing.selected && existing.selected !== option ? existing.changedCount + 1 : existing.changedCount;
-      return {
-        ...current,
-        [currentQuestion.id]: {
-          ...existing,
-          selected: option,
-          changedCount: nextChangedCount,
-        },
-      };
-    });
-  }
-
-  async function startQuiz() {
-    if (!studentName.trim()) {
-      window.alert("Enter your name before starting the quiz.");
-      return;
-    }
-
-    if (selectedTopics.length === 0) {
-      window.alert("Select at least one topic.");
-      return;
-    }
-
-    if (mode === "practice") {
-      if (!examCode.trim()) {
-        window.alert("Enter the practice passcode before starting.");
-        return;
-      }
-      if (examCode.trim() !== PRACTICE_MASTER_PASSCODE) {
-        window.alert("That practice passcode is not correct.");
-        return;
+        localStorage.removeItem(STORAGE_FLOW_URL);
+        localStorage.setItem(STORAGE_FLOW_URL_DISABLED, '1');
       }
     }
-
-    if (mode === "exam") {
-      if (!studentEmail.trim()) {
-        window.alert("Enter your email before starting exam mode.");
-        return;
+    async function recordSyncRequest(action, payload = {}) {
+      const url = getRecordSyncUrl();
+      if (!url) throw new Error('Record sync URL is not configured.');
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          app: 'csec-additional-maths-static-site',
+          action,
+          payload,
+          sentAt: new Date().toISOString()
+        })
+      });
+      const responseText = await response.text();
+      let data = null;
+      try { data = responseText ? JSON.parse(responseText) : null; } catch { data = responseText; }
+      if (!response.ok) throw new Error(typeof data === 'string' ? data : (data?.message || `Record sync request failed (${response.status}).`));
+      return data;
+    }
+    function normaliseAttemptFromRecordSyncRow(row) {
+      if (!row) return null;
+      if (row.payload && typeof row.payload === 'object') return row.payload;
+      if (row.Payload && typeof row.Payload === 'object') return row.Payload;
+      if (row.payload && typeof row.payload === 'string') {
+        try { return JSON.parse(row.payload); } catch { /* ignore */ }
       }
-      if (!examCode.trim()) {
-        window.alert("Enter the access code given by your teacher.");
-        return;
+      if (row.Payload && typeof row.Payload === 'string') {
+        try { return JSON.parse(row.Payload); } catch { /* ignore */ }
       }
+      if (row.id || row.Id || row.Title || row.StudentName) {
+        return {
+          id: row.AttemptId || row.id || row.Title || String(row.Id || id()),
+          studentName: row.StudentName || row.studentName || 'Student',
+          studentEmail: row.StudentEmail || row.studentEmail || '',
+          schoolName: row.SchoolName || row.schoolName || '',
+          mode: row.Mode || row.mode || 'practice',
+          selectedTopics: typeof row.SelectedTopics === 'string' ? row.SelectedTopics.split(',').map(item => item.trim()).filter(Boolean) : (row.selectedTopics || []),
+          questionCount: Number(row.QuestionCount || row.questionCount || 0),
+          startedAt: row.StartedAt || row.startedAt || row.SubmittedAt || new Date().toISOString(),
+          submittedAt: row.SubmittedAt || row.submittedAt || new Date().toISOString(),
+          durationMinutes: Number(row.DurationMinutes || row.durationMinutes || 0),
+          answers: row.Answers ? JSON.parse(row.Answers) : (row.answers || []),
+          questions: row.Questions ? JSON.parse(row.Questions) : (row.questions || []),
+          score: Number(row.Score || row.score || 0),
+          percentage: Number(row.Percentage || row.percentage || 0),
+          scoredQuestionCount: Number(row.ScoredQuestionCount || row.scoredQuestionCount || row.QuestionCount || 0),
+          integrityEvents: row.IntegrityEvents ? JSON.parse(row.IntegrityEvents) : (row.integrityEvents || []),
+          teacherFeedback: row.TeacherFeedback || row.teacherFeedback || ''
+        };
+      }
+      return null;
+    }
+    function normaliseRecordSyncAttempts(data) {
+      const raw = Array.isArray(data) ? data : Array.isArray(data?.attempts) ? data.attempts : Array.isArray(data?.value) ? data.value : [];
+      return raw.map(normaliseAttemptFromRecordSyncRow).filter(Boolean);
+    }
+    async function saveAttemptToRecordSync(attempt) {
+      if (!getRecordSyncUrl()) return;
+      return recordSyncRequest('saveAttempt', { attempt });
+    }
+    async function loadAttemptsFromRecordSync() {
+      const data = await recordSyncRequest('listAttempts');
+      const remoteAttempts = normaliseRecordSyncAttempts(data);
+      const merged = mergeAttempts(remoteAttempts, readAttempts());
+      writeAttempts(merged);
+      return merged;
+    }
+    async function saveFeedbackToRecordSync(attemptId, feedback, attempt) {
+      if (!getRecordSyncUrl()) return;
+      return recordSyncRequest('saveFeedback', { attemptId, feedback, attempt });
+    }
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    function formatTime(seconds) { return `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, '0')}s`; }
+    function id() { return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`; }
+    function setRole(role) {
+      state.role = role;
+      $$("[data-role-button]").forEach(btn => btn.classList.toggle('active', btn.dataset.roleButton === role));
+      $('#studentView').classList.toggle('hidden', role !== 'student');
+      $('#parentView').classList.toggle('hidden', role !== 'parent');
+      $('#teacherView').classList.toggle('hidden', role !== 'teacher');
+      render();
+    }
 
-      if (SUPABASE_ENABLED) {
-        try {
-          await consumeExamAccessCode(studentEmail.trim(), examCode.trim());
-        } catch (error) {
-          window.alert(error instanceof Error ? error.message : "Unable to validate the access code.");
+    function render() {
+      if (state.role === 'student') renderStudent();
+      if (state.role === 'parent') renderParent();
+      if (state.role === 'teacher') renderTeacher();
+    }
+
+    function renderStudent() {
+      const root = $('#studentView');
+      if (state.quiz?.submitted) return renderSubmitted(root);
+      if (state.quiz?.questions?.length) return renderQuiz(root);
+      const s = state.setup;
+      root.innerHTML = `
+        <div class="grid two">
+          <section class="card">
+            <div class="card-header">
+              <h2>Let’s set up your quiz</h2>
+              <p class="desc">Students enter details, choose topics, and start when ready.</p>
+            </div>
+            <div class="card-content">
+              <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+                <div class="field"><label>Your name</label><input id="studentName" value="${escapeHtml(s.name)}" placeholder="Type your full name"></div>
+                <div class="field"><label>Email address</label><input id="studentEmail" type="email" value="${escapeHtml(s.email)}" placeholder="Type your email address"></div>
+              </div>
+              <div class="field"><label>School name</label><input id="schoolName" value="${escapeHtml(s.school)}" placeholder="Type your school name"></div>
+              <div class="field">
+                <div class="row" style="justify-content: space-between; margin-bottom: 10px;"><label style="margin:0">Pick your topics</label><button class="btn secondary" id="selectAllTopics">${s.selectedTopics.length === AVAILABLE_TOPICS.length ? 'Clear all' : 'Select all'}</button></div>
+                <div class="topic-grid">${AVAILABLE_TOPICS.map(topic => `<button class="topic-btn ${s.selectedTopics.includes(topic) ? 'selected' : ''}" data-topic="${escapeHtml(topic)}">${escapeHtml(topic)}</button>`).join('')}</div>
+              </div>
+              <div class="grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+                <div class="field"><label>Mode</label><select id="mode"><option ${s.mode === 'practice' ? 'selected' : ''}>practice</option><option ${s.mode === 'trial' ? 'selected' : ''}>trial</option><option ${s.mode === 'exam' ? 'selected' : ''}>exam</option></select></div>
+                <div class="field"><label>Question count</label><input id="questionCount" type="number" min="1" max="80" value="${s.mode === 'exam' ? EXAM_QUESTION_COUNT : s.count}" ${s.mode === 'exam' ? 'disabled' : ''}><p class="desc">${s.mode === 'exam' ? 'Exam mode is fixed at 45 questions.' : 'Choose any available practice/trial size.'}</p></div>
+                <div class="field"><label>${s.mode === 'exam' ? 'Exam access code' : s.mode === 'trial' ? 'No code needed' : 'Practice passcode'}</label><input id="accessCode" ${s.mode === 'trial' ? 'disabled' : ''} value="${escapeHtml(s.code)}" placeholder="${s.mode === 'practice' ? 'Enter practice passcode' : s.mode === 'exam' ? 'teacher-issued code' : 'trial mode'}"></div>
+              </div>
+              <div class="actions"><button class="btn primary" id="startQuiz">Start quiz</button></div>
+            </div>
+          </section>
+          <aside class="card">
+            <div class="card-header"><h2>Quiz information</h2></div>
+            <div class="card-content">
+              <ul class="list">
+                <li>Practice mode requires authorized access.</li>
+                <li>Trial mode does not require a code.</li>
+                <li>Exam mode is fixed at <strong>45 questions</strong> and <strong>90 minutes</strong>; it can request fullscreen and records integrity notes.</li>
+                <li>Results can be reviewed later by authorized users.</li>
+                <li>Parent and teacher views require authorized access codes.</li>
+              </ul>
+              <div class="splitline"></div>
+              <div class="note warn"><strong>Static hosting note:</strong> upload this <code>index.html</code> to Netlify, GitHub Pages, Vercel, or any web server.</div>
+            </div>
+          </aside>
+        </div>`;
+      bindSetup();
+    }
+
+    function bindSetup() {
+      const bind = (idName, prop) => $(`#${idName}`).addEventListener('input', e => state.setup[prop] = e.target.value);
+      bind('studentName', 'name'); bind('studentEmail', 'email'); bind('schoolName', 'school');
+      $('#mode').addEventListener('change', e => { state.setup.mode = e.target.value; if (e.target.value === 'trial') state.setup.code = ''; if (e.target.value === 'exam') state.setup.count = EXAM_QUESTION_COUNT; renderStudent(); });
+      $('#questionCount')?.addEventListener('input', e => state.setup.count = Math.max(1, Number(e.target.value) || 1));
+      $('#accessCode')?.addEventListener('input', e => state.setup.code = e.target.value);
+      $$('.topic-btn').forEach(btn => btn.addEventListener('click', () => {
+        const topic = btn.dataset.topic;
+        state.setup.selectedTopics = state.setup.selectedTopics.includes(topic)
+          ? state.setup.selectedTopics.filter(t => t !== topic)
+          : [...state.setup.selectedTopics, topic];
+        renderStudent();
+      }));
+      $('#selectAllTopics').addEventListener('click', () => { state.setup.selectedTopics = state.setup.selectedTopics.length === AVAILABLE_TOPICS.length ? [] : [...AVAILABLE_TOPICS]; renderStudent(); });
+      $('#startQuiz').addEventListener('click', startQuiz);
+    }
+
+    async function startQuiz() {
+      const s = state.setup;
+      if (!s.name.trim()) return alert('Enter your name before starting.');
+      if (!s.selectedTopics.length) return alert('Select at least one topic.');
+      if (s.mode === 'practice' && s.code.trim() !== PRACTICE_CODE) return alert('That access code is not correct.');
+      if (s.mode === 'exam' && !s.code.trim()) return alert('Enter the exam access code given by your teacher.');
+      if (s.mode === 'exam' && document.documentElement.requestFullscreen) {
+        try { await document.documentElement.requestFullscreen(); } catch { /* continue for browsers that block it */ }
+      }
+      const pool = QUESTION_BANK.filter(q => s.selectedTopics.includes(q.topic));
+      const targetCount = s.mode === 'exam' ? EXAM_QUESTION_COUNT : Math.max(1, Number(s.count) || 10);
+      if (s.mode === 'exam' && pool.length < EXAM_QUESTION_COUNT) return alert(`Exam mode needs at least ${EXAM_QUESTION_COUNT} questions from the selected topics. Select more topics or choose Select all.`);
+      const questions = shuffle(pool).slice(0, Math.min(targetCount, pool.length)).map(q => ({...q, order: shuffle(['A','B','C','D'])}));
+      if (!questions.length) return alert('No questions are available for the selected topics.');
+      state.quiz = { questions, current: 0, answers: {}, integrity: [], submitted: null };
+      state.startedAt = new Date().toISOString();
+      state.elapsed = 0;
+      if (state.timer) clearInterval(state.timer);
+      state.timer = setInterval(() => {
+        state.elapsed += 1;
+        if (state.setup.mode === 'exam' && state.elapsed >= EXAM_DURATION_SECONDS && state.quiz && !state.quiz.submitted) {
+          state.quiz.integrity.push({ type: 'time_expired', at: new Date().toISOString(), details: 'Exam time expired after 90 minutes.' });
+          submitQuiz(true);
           return;
         }
-      }
+        renderQuizHeaderOnly();
+      }, 1000);
+      document.addEventListener('visibilitychange', recordVisibility, { passive: true });
+      renderStudent();
+    }
+    function recordVisibility() {
+      if (!state.quiz || state.quiz.submitted) return;
+      state.quiz.integrity.push({ type: document.hidden ? 'tab_blur' : 'tab_focus', at: new Date().toISOString(), details: document.hidden ? 'Student switched away from the quiz tab.' : 'Student returned to the quiz tab.' });
+    }
+    function renderQuizHeaderOnly() {
+      const time = $('#elapsedTime');
+      if (time) time.textContent = state.setup.mode === 'exam' ? `Time left: ${formatTime(Math.max(0, EXAM_DURATION_SECONDS - state.elapsed))}` : formatTime(state.elapsed);
+    }
+    function renderQuiz(root) {
+      const q = state.quiz.questions[state.quiz.current];
+      const selected = state.quiz.answers[q.id];
+      root.innerHTML = `
+        <div class="topbar">
+          <div>Student: <strong>${escapeHtml(state.setup.name || 'Unnamed student')}</strong>${state.setup.email ? ` · <span style="color:#64748b">${escapeHtml(state.setup.email)}</span>` : ''}</div>
+          <div class="row">
+            <div class="progress-wrap"><div class="progress-label"><span>Progress</span><span>${state.quiz.current + 1}/${state.quiz.questions.length}</span></div><div class="progress"><span style="width:${((state.quiz.current + 1) / state.quiz.questions.length) * 100}%"></span></div></div>
+            <span class="badge" id="elapsedTime">${state.setup.mode === 'exam' ? `Time left: ${formatTime(Math.max(0, EXAM_DURATION_SECONDS - state.elapsed))}` : formatTime(state.elapsed)}</span>
+          </div>
+        </div>
+        <section class="card">
+          <div class="card-header">
+            <div class="row"><span class="badge">Question ${state.quiz.current + 1} of ${state.quiz.questions.length}</span><span class="badge dark">${escapeHtml(q.subtopic)}</span>${q.correctAnswer ? '<span class="badge green">verified key</span>' : '<span class="badge red">unscored</span>'}</div>
+          </div>
+          <div class="card-content">
+            <div class="question-box"><div class="question-label">Question</div><div class="question-text">${rich(q.stem)}</div></div>
+            <div class="option-grid">${q.order.map(letter => `<button class="option ${selected === letter ? 'selected' : ''}" data-answer="${letter}"><span class="letter">${letter}</span><span>${rich(q.options[letter])}</span></button>`).join('')}</div>
+            <div class="splitline"></div>
+            <div class="actions" style="justify-content: space-between">
+              <div class="actions"><button class="btn" id="prevQuestion" ${state.quiz.current === 0 ? 'disabled' : ''}>Previous</button><button class="btn" id="nextQuestion" ${state.quiz.current === state.quiz.questions.length - 1 ? 'disabled' : ''}>Next</button></div>
+              <div class="actions"><button class="btn danger" id="cancelQuiz">Cancel quiz</button><button class="btn primary" id="submitQuiz">Submit quiz</button></div>
+            </div>
+          </div>
+        </section>`;
+      $$('.option').forEach(btn => btn.addEventListener('click', () => { state.quiz.answers[q.id] = btn.dataset.answer; renderQuiz(root); }));
+      $('#prevQuestion').addEventListener('click', () => { state.quiz.current = Math.max(0, state.quiz.current - 1); renderStudent(); });
+      $('#nextQuestion').addEventListener('click', () => { state.quiz.current = Math.min(state.quiz.questions.length - 1, state.quiz.current + 1); renderStudent(); });
+      $('#cancelQuiz').addEventListener('click', resetQuiz);
+      $('#submitQuiz').addEventListener('click', () => { if (confirm('Submit this quiz now? You cannot change answers after submitting.')) submitQuiz(false); });
+    }
+    function submitQuiz(autoSubmitted = false) {
+      const verifiedQuestions = state.quiz.questions.filter(q => q.correctAnswer);
+      const score = verifiedQuestions.filter(q => state.quiz.answers[q.id] === q.correctAnswer).length;
+      const percentage = verifiedQuestions.length ? Math.round((score / verifiedQuestions.length) * 100) : 0;
+      if (state.elapsed > 0 && state.elapsed < state.quiz.questions.length * 12) state.quiz.integrity.push({ type: 'very_fast_finish', at: new Date().toISOString(), details: 'Quiz submitted very quickly compared with number of questions.' });
+      const attempt = {
+        id: id(),
+        studentName: state.setup.name.trim(),
+        studentEmail: state.setup.email.trim(),
+        schoolName: state.setup.school.trim(),
+        mode: state.setup.mode,
+        selectedTopics: [...state.setup.selectedTopics],
+        questionCount: state.quiz.questions.length,
+        startedAt: state.startedAt,
+        submittedAt: new Date().toISOString(),
+        durationMinutes: Math.max(1, Math.round(state.elapsed / 60)),
+        answers: state.quiz.questions.map(q => ({ questionId: q.id, selected: state.quiz.answers[q.id] || '', isCorrect: q.correctAnswer ? state.quiz.answers[q.id] === q.correctAnswer : undefined })),
+        questions: state.quiz.questions,
+        score,
+        percentage,
+        scoredQuestionCount: verifiedQuestions.length,
+        integrityEvents: autoSubmitted ? [...state.quiz.integrity, { type: 'auto_submit', at: new Date().toISOString(), details: 'The exam was submitted automatically.' }] : state.quiz.integrity,
+        teacherFeedback: ''
+      };
+      saveAttempt(attempt);
+      state.quiz.submitted = attempt;
+      clearInterval(state.timer);
+      document.removeEventListener('visibilitychange', recordVisibility);
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => undefined);
+      renderStudent();
+    }
+    function resetQuiz() {
+      if (state.timer) clearInterval(state.timer);
+      state.quiz = null; state.startedAt = null; state.elapsed = 0; state.setup.code = '';
+      document.removeEventListener('visibilitychange', recordVisibility);
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => undefined);
+      renderStudent();
+    }
+    function renderSubmitted(root) {
+      const attempt = state.quiz.submitted;
+      root.innerHTML = `
+        <section class="card">
+          <div class="card-header"><h2>Quiz submitted</h2><p class="desc">${escapeHtml(attempt.studentName)}, here is your result summary.</p></div>
+          <div class="card-content">
+            <div class="grid four">
+              <div class="stat"><small>Score</small><strong>${attempt.score}/${attempt.scoredQuestionCount}</strong></div>
+              <div class="stat"><small>Percentage</small><strong>${attempt.percentage}%</strong></div>
+              <div class="stat"><small>Duration</small><strong>${attempt.durationMinutes} min</strong></div>
+              <div class="stat"><small>Flags</small><strong>${attempt.integrityEvents.length}</strong></div>
+            </div>
+            <div class="splitline"></div>
+            ${attempt.questions.map((q, index) => {
+              const answer = attempt.answers.find(a => a.questionId === q.id);
+              const isCorrect = answer?.isCorrect;
+              return `<article class="card result-item"><div class="card-header"><div class="row" style="justify-content:space-between"><div><span class="badge">Question ${index + 1}</span><h3 style="margin-top:10px">${escapeHtml(q.topic)}</h3></div><span class="badge ${q.correctAnswer ? (isCorrect ? 'green' : 'red') : ''}">${q.correctAnswer ? (isCorrect ? 'Correct' : 'Incorrect') : 'Unscored'}</span></div></div><div class="card-content"><div class="question-box"><div class="question-label">Question</div><div>${rich(q.stem)}</div></div><div class="option-grid">${(q.order || ['A','B','C','D']).map(letter => {
+                const classes = answer?.selected === letter && q.correctAnswer === letter ? 'correct' : answer?.selected === letter && q.correctAnswer !== letter ? 'wrong' : q.correctAnswer === letter ? 'correct' : '';
+                return `<div class="option ${classes}" style="cursor:default; transform:none"><span class="letter">${letter}</span><span>${rich(q.options[letter])}</span></div>`;
+              }).join('')}</div>${q.correctAnswer ? `<p class="note good" style="margin-top:14px">Correct answer: <strong>${q.correctAnswer}</strong></p>` : `<p class="note warn" style="margin-top:14px">This item has no verified answer key in the static bank, so it was not scored.</p>`}</div></article>`;
+            }).join('')}
+            <div class="actions" style="margin-top:18px"><button class="btn primary" id="anotherQuiz">Set up another quiz</button><button class="btn" onclick="window.print()">Print result</button></div>
+          </div>
+        </section>`;
+      $('#anotherQuiz').addEventListener('click', resetQuiz);
+    }
 
-      const enteredFullscreen = await requestAppFullscreen();
-      if (!enteredFullscreen) {
-        window.alert("Exam mode requires fullscreen before starting.");
+    function renderParent() {
+      const root = $('#parentView');
+      if (!state.parentUnlocked) {
+        root.innerHTML = `<div class="grid two"><section class="card"><div class="card-header"><h2>Parent access</h2><p class="desc">Enter the parent access code to view student results.</p></div><div class="card-content"><div class="field"><label>Parent access code</label><input id="parentCode" type="password" placeholder="Enter parent code"></div><div class="actions"><button class="btn primary" id="unlockParent">Open parent view</button></div></div></section><aside class="card"><div class="card-header"><h2>Parent security</h2></div><div class="card-content"><p class="note">This read-only view searches available student records. Access is restricted to authorized users.</p></div></aside></div>`;
+        $('#unlockParent').addEventListener('click', () => { if ($('#parentCode').value === PARENT_CODE) { state.parentUnlocked = true; renderParent(); } else alert('That parent access code is not correct.'); });
         return;
       }
-    }
-
-    const count = Math.max(1, Number(questionCount) || 10);
-    const filteredQuestions = buildShuffledQuestionSet(
-      QUESTION_BANK.filter((question) => selectedTopics.includes(question.topic)),
-      count
-    );
-    if (filteredQuestions.length === 0) {
-      window.alert("No questions are available for the selected topics yet.");
-      return;
-    }
-
-    setQuizQuestions(filteredQuestions);
-    setAnswersByQuestion({});
-    setCurrentIndex(0);
-    setStartedAt(new Date().toISOString());
-    setElapsedSeconds(0);
-    setIntegrityEvents([]);
-    setSubmittedAttempt(null);
-    questionEnterRef.current = Date.now();
-  }
-
-  async function submitQuiz() {
-    if (!startedAt) return;
-    commitCurrentQuestionTime();
-    setSubmitting(true);
-
-    const answerList = quizQuestions.map((question) => {
-      const answer = answersByQuestion[question.id] ?? {
-        questionId: question.id,
-        changedCount: 0,
-        timeSpentSeconds: 0,
-      };
-      const isCorrect = question.correctAnswer ? answer.selected === question.correctAnswer : undefined;
-      return {
-        ...answer,
-        isCorrect,
-      };
-    });
-
-    const scoredQuestions = quizQuestions.filter((question) => !!question.correctAnswer);
-    const score = scoredQuestions.filter((question) => answersByQuestion[question.id]?.selected === question.correctAnswer).length;
-    const scoredQuestionCount = quizQuestions.length;
-    const percentage = scoredQuestionCount ? Math.round((score / scoredQuestionCount) * 100) : 0;
-
-    const finalIntegrity = [...integrityEvents];
-    if (elapsedSeconds > 0 && elapsedSeconds < quizQuestions.length * 12) {
-      finalIntegrity.push({
-        type: "very_fast_finish",
-        at: new Date().toISOString(),
-        details: "Quiz was submitted very quickly compared with the number of questions.",
+      const attempts = readAttempts();
+      root.innerHTML = `<section class="card"><div class="card-header"><div class="row" style="justify-content:space-between"><div><h2>Parent view</h2><p class="desc">Look up completed quizzes by student email or name.</p></div><button class="btn secondary" id="lockParent">Lock parent view</button></div></div><div class="card-content"><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="field"><label>Student email</label><input id="parentEmail" type="email"></div><div class="field"><label>Student name</label><input id="parentName"></div></div><div class="actions"><button class="btn primary" id="searchParent">View student results</button><button class="btn" id="syncParentRecordSync">Refresh results</button><button class="btn" id="clearParent">Clear</button></div><div id="parentResults" style="margin-top:18px"></div></div></section>`;
+      $('#lockParent').addEventListener('click', () => { state.parentUnlocked = false; renderParent(); });
+      $('#clearParent').addEventListener('click', () => { $('#parentEmail').value = ''; $('#parentName').value = ''; $('#parentResults').innerHTML = ''; });
+      $('#syncParentRecordSync').addEventListener('click', async () => {
+        const target = $('#parentResults');
+        try {
+          target.innerHTML = '<p class="note">Refreshing records...</p>';
+          await loadAttemptsFromRecordSync();
+          target.innerHTML = '<p class="note good">Results refreshed. Search again to view the latest records.</p>';
+        } catch (error) {
+          target.innerHTML = `<p class="note warn">Refresh failed: ${escapeHtml(error.message || String(error))}</p>`;
+        }
+      });
+      $('#searchParent').addEventListener('click', () => {
+        const email = $('#parentEmail').value.trim().toLowerCase();
+        const name = $('#parentName').value.trim().toLowerCase();
+        const matches = attempts.filter(a => (!email || (a.studentEmail || '').toLowerCase() === email) && (!name || (a.studentName || '').toLowerCase().includes(name)));
+        $('#parentResults').innerHTML = renderAttempts(matches, false);
       });
     }
 
-    const attempt: Attempt = {
-      id: generateId(),
-      studentName: studentName.trim(),
-      schoolName: schoolName.trim(),
-      studentEmail: studentEmail.trim(),
-      mode,
-      selectedTopics,
-      questionCount: quizQuestions.length,
-      startedAt,
-      submittedAt: new Date().toISOString(),
-      durationMinutes: Math.max(1, Math.round(elapsedSeconds / 60)),
-      answers: answerList,
-      questions: quizQuestions,
-      score,
-      percentage,
-      scoredQuestionCount,
-      integrityEvents: finalIntegrity,
-      teacherFeedback: "",
-    };
-
-    try {
-      saveCompletedAttempt(attempt);
-      setSubmittedAttempt(attempt);
-      setShowExamSecurityLock(false);
-      if (document.fullscreenElement && document.exitFullscreen) {
-        void document.exitFullscreen().catch(() => undefined);
+    function renderTeacher() {
+      const root = $('#teacherView');
+      if (!state.teacherUnlocked) {
+        root.innerHTML = `<div class="grid two"><section class="card"><div class="card-header"><h2>Teacher access</h2><p class="desc">Enter the teacher access code to review quiz attempts and save feedback.</p></div><div class="card-content"><div class="field"><label>Access code</label><input id="teacherCode" type="password" placeholder="Enter access code"></div><div class="actions"><button class="btn primary" id="unlockTeacher">Open teacher view</button></div></div></section><aside class="card"><div class="card-header"><h2>Teacher tools</h2></div><div class="card-content"><ul class="list"><li>Review available attempts.</li><li>Add parent/student feedback.</li><li>Configure optional record syncing.</li><li>Export/import JSON for backup.</li></ul><p class="note" style="margin-top:14px">Authorized access only.</p></div></aside></div>`;
+        $('#unlockTeacher').addEventListener('click', () => { if ($('#teacherCode').value === TEACHER_CODE) { state.teacherUnlocked = true; localStorage.setItem(STORAGE_TEACHER, '1'); renderTeacher(); } else alert('That access code is not correct.'); });
+        return;
       }
-
-      try {
-        await saveCompletedAttemptToDatabase(attempt);
-      } catch (error) {
-        console.error("Background save failed", error);
-      }
-    } finally {
-      setSubmitting(false);
+      const attempts = readAttempts();
+      const flowUrl = getRecordSyncUrl();
+      root.innerHTML = `<section class="card"><div class="card-header"><div class="row" style="justify-content:space-between"><div><h2>Teacher dashboard</h2><p class="desc">Review attempts, sync records, and leave feedback.</p></div><div class="actions"><button class="btn" id="syncRecordSync">Sync records</button><button class="btn" id="exportAttempts">Export JSON</button><label class="btn" for="importAttempts" style="margin:0">Import JSON</label><input id="importAttempts" type="file" accept="application/json" style="display:none"><button class="btn secondary" id="lockTeacher">Lock teacher view</button></div></div></div><div class="card-content"><div class="note warn">${AUDIT_NOTES.map(escapeHtml).join('<br>')}</div><div class="splitline"></div><div class="grid" style="grid-template-columns:minmax(0,1fr) auto"><div class="field"><label>Record sync URL</label><input id="flowUrl" value="${escapeHtml(flowUrl)}" placeholder="Paste the private record sync URL here"><p class="desc">The static website can sync attempts and feedback to a private records endpoint. Leave blank to use this device only.</p></div><div class="actions" style="align-items:flex-start;padding-top:26px"><button class="btn primary" id="saveFlowUrl">Save URL</button><button class="btn" id="clearFlowUrl">Clear</button></div></div><div id="syncStatus" class="note ${flowUrl ? 'good' : ''}">${flowUrl ? 'Record sync is configured on this device.' : 'Record sync is not configured yet. Attempts will remain on this device until it is added.'}</div><div style="margin-top:18px" id="attemptsList">${renderAttempts(attempts, true)}</div></div></section>`;
+      $('#lockTeacher').addEventListener('click', () => { state.teacherUnlocked = false; localStorage.removeItem(STORAGE_TEACHER); renderTeacher(); });
+      $('#exportAttempts').addEventListener('click', exportAttempts);
+      $('#importAttempts').addEventListener('change', importAttempts);
+      $('#saveFlowUrl').addEventListener('click', () => { setRecordSyncUrl($('#flowUrl').value); renderTeacher(); });
+      $('#clearFlowUrl').addEventListener('click', () => { setRecordSyncUrl(''); renderTeacher(); });
+      $('#syncRecordSync').addEventListener('click', async () => {
+        const status = $('#syncStatus');
+        try {
+          status.className = 'note';
+          status.textContent = 'Refreshing records...';
+          const synced = await loadAttemptsFromRecordSync();
+          status.className = 'note good';
+          status.textContent = `Record sync complete. ${synced.length} attempt(s) available locally.`;
+          $('#attemptsList').innerHTML = renderAttempts(synced, true);
+          bindFeedbackButtons();
+        } catch (error) {
+          status.className = 'note warn';
+          status.textContent = `Refresh failed: ${error.message || error}`;
+        }
+      });
+      bindFeedbackButtons();
     }
-  }
 
-  function resetQuiz() {
-    setSelectedTopics([]);
-    setQuizQuestions([]);
-    setAnswersByQuestion({});
-    setCurrentIndex(0);
-    setStartedAt(null);
-    setElapsedSeconds(0);
-    setIntegrityEvents([]);
-    setSubmittedAttempt(null);
-    setShowSubmitConfirm(false);
-    setShowExamSecurityLock(false);
-    if (document.fullscreenElement && document.exitFullscreen) {
-      void document.exitFullscreen().catch(() => undefined);
+    function bindFeedbackButtons() {
+      $$('.save-feedback').forEach(btn => btn.addEventListener('click', async () => {
+        const attemptId = btn.dataset.attemptId;
+        const attemptsNow = readAttempts();
+        const target = attemptsNow.find(a => a.id === attemptId);
+        if (!target) return;
+        target.teacherFeedback = $(`[data-feedback-for="${attemptId}"]`).value;
+        writeAttempts(attemptsNow);
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        try {
+          await saveFeedbackToRecordSync(attemptId, target.teacherFeedback, target);
+          btn.textContent = 'Saved';
+        } catch (error) {
+          console.warn('Online feedback save failed; saved locally.', error);
+          btn.textContent = 'Saved locally';
+        } finally {
+          btn.disabled = false;
+          setTimeout(() => btn.textContent = 'Save feedback', 1400);
+        }
+      }));
     }
-    setExamCode("");
-    setExamRequestMessage("");
-    questionEnterRef.current = Date.now();
-  }
 
-  if (!startedAt && !submittedAttempt) {
-    return (
-      <div className="space-y-4">
-        <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr] items-start">
-          <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-            <CardHeader>
-              <CardTitle className="text-xl">Let’s set up your quiz</CardTitle>
-              <CardDescription>Students do not need login details. Enter your information, choose your mode, and start when ready.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Your name</Label>
-                  <Input value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="Type your full name" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Email address</Label>
-                  <Input type="email" value={studentEmail} onChange={(e) => setStudentEmail(e.target.value)} placeholder="Type your email address" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>School name</Label>
-                <Input value={schoolName} onChange={(e) => setSchoolName(e.target.value)} placeholder="Type your school name" />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Label>Pick your topics</Label>
-                  <Button
-                    variant={selectedTopics.length === AVAILABLE_TOPICS.length ? "default" : "outline"}
-                    onClick={() => setSelectedTopics(selectedTopics.length === AVAILABLE_TOPICS.length ? [] : [...AVAILABLE_TOPICS])}
-                  >
-                    {selectedTopics.length === AVAILABLE_TOPICS.length ? "Clear all" : "Select all"}
-                  </Button>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {AVAILABLE_TOPICS.map((topic) => {
-                    const active = selectedTopics.includes(topic);
-                    return (
-                      <button
-                        key={topic}
-                        type="button"
-                        onClick={() => toggleTopic(topic)}
-                        className={cn(
-                          "rounded-lg border px-3 py-3 text-left text-sm transition",
-                          active ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
-                        )}
-                      >
-                        {topic}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className={cn("grid gap-4", mode === "trial" ? "md:grid-cols-2" : "md:grid-cols-3")}>
-                <div className="space-y-2">
-                  <Label>Mode</Label>
-                  <Select value={mode} onValueChange={(value) => setMode(value as Mode)}>
-                    <SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="practice">practice</SelectItem>
-                        <SelectItem value="trial">trial</SelectItem>
-                        <SelectItem value="exam">exam</SelectItem>
-                      </SelectContent>
-                    </SelectTrigger>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Question count</Label>
-                  {mode === "practice" ? (
-                    <Input
-                      type="number"
-                      min="1"
-                      value={questionCount}
-                      onChange={(e) => setQuestionCount(e.target.value)}
-                      placeholder="Enter how many questions you want"
-                    />
-                  ) : (
-                    <Select value={questionCount} onValueChange={setQuestionCount}>
-                      <SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="5">5</SelectItem>
-                          <SelectItem value="10">10</SelectItem>
-                          <SelectItem value="15">15</SelectItem>
-                          <SelectItem value="20">20</SelectItem>
-                        </SelectContent>
-                      </SelectTrigger>
-                    </Select>
-                  )}
-                </div>
-                {mode !== "trial" ? (
-                  <div className="space-y-2">
-                    <Label>{mode === "practice" ? "Practice passcode" : "Exam access code"}</Label>
-                    <Input
-                      value={examCode}
-                      onChange={(e) => setExamCode(e.target.value)}
-                      placeholder={mode === "practice" ? "Enter practice2026" : "Enter teacher exam code"}
-                    />
-                  </div>
-                ) : null}
-              </div>
-
-              {mode === "exam" ? (
-                <div className="space-y-3 rounded-sm border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-sm text-slate-700">Students must enter their name and email before requesting an exam code.</div>
-                  {examRequestMessage ? <div className="rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">{examRequestMessage}</div> : null}
-                  <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" onClick={requestExamCode}>Request exam code</Button>
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="flex flex-wrap gap-2">
-                <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => void startQuiz()}>
-                  Start quiz
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-            <CardHeader>
-              <CardTitle className="text-xl">Quiz information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-700">
-              <div>• Students do not need login details to use the quiz.</div>
-              <div>• Practice mode uses one passcode: <span className="font-semibold text-slate-900">practice2026</span>.</div>
-              <div>• Trial mode does not require any code.</div>
-              <div>• Exam mode requires student name, email, and a teacher-issued exam code.</div>
-              <div>• Your selected answer is highlighted while you work.</div>
-              <div>• Results can be reviewed later by teachers and parents.</div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  if (submittedAttempt) {
-    return (
-      <div className="space-y-4">
-        <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-          <CardHeader>
-            <CardTitle className="text-2xl">Quiz submitted</CardTitle>
-            <CardDescription>{submittedAttempt.studentName}, here is your result summary.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-4">
-              <div className="rounded-sm border border-slate-200 bg-slate-50 p-4">
-                <div className="text-sm text-slate-500">Score</div>
-                <div className="mt-2 text-3xl font-bold text-slate-900">{submittedAttempt.score}/{submittedAttempt.questionCount || submittedAttempt.questions.length}</div>
-              </div>
-              <div className="rounded-sm border border-slate-200 bg-slate-50 p-4">
-                <div className="text-sm text-slate-500">Percentage</div>
-                <div className="mt-2 text-3xl font-bold text-slate-900">{submittedAttempt.percentage}%</div>
-              </div>
-              <div className="rounded-sm border border-slate-200 bg-slate-50 p-4">
-                <div className="text-sm text-slate-500">Duration</div>
-                <div className="mt-2 text-3xl font-bold text-slate-900">{submittedAttempt.durationMinutes} min</div>
-              </div>
-              <div className="rounded-sm border border-slate-200 bg-slate-50 p-4">
-                <div className="text-sm text-slate-500">Flags</div>
-                <div className="mt-2 text-3xl font-bold text-slate-900">{submittedAttempt.integrityEvents.length}</div>
-              </div>
-            </div>
-
-            {submittedAttempt.teacherFeedback ? (
-              <div className="rounded-sm border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
-                <div className="font-medium">Teacher feedback</div>
-                <div className="mt-2 whitespace-pre-wrap">{submittedAttempt.teacherFeedback}</div>
-              </div>
-            ) : null}
-
-            {ANSWERS_VISIBLE_ONLY_AFTER_SUBMIT ? (
-              <div className="space-y-4">
-                {submittedAttempt.questions.map((question, index) => {
-                  const answer = submittedAttempt.answers.find((item) => item.questionId === question.id);
-                  return (
-                    <Card key={question.id} className="rounded-md border border-slate-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.05)]">
-                      <CardHeader>
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div className="space-y-2">
-                            <Badge variant="outline">Question {index + 1}</Badge>
-                            <CardTitle className="text-lg">{question.topic}</CardTitle>
-                            <CardDescription>{question.subtopic}</CardDescription>
-                          </div>
-                          <Badge variant={answer?.isCorrect ? "secondary" : "destructive"}>{answer?.isCorrect ? "Correct" : "Incorrect"}</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 px-5 py-5 text-slate-900 shadow-sm">
-                          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Question</div>
-                          <RichText text={question.stem} className="block text-lg leading-8 md:text-xl md:leading-9" />
-                        </div>
-                        <div className="space-y-2">
-                          {(question.optionOrder ?? (["A", "B", "C", "D"] as OptionKey[])).map((option) => {
-                            const selected = answer?.selected === option;
-                            const correct = question.correctAnswer === option;
-                            return (
-                              <div
-                                key={option}
-                                className={cn(
-                                  "rounded-lg border px-4 py-3 text-sm",
-                                  selected && correct && "border-emerald-500 bg-emerald-50",
-                                  selected && !correct && "border-rose-500 bg-rose-50",
-                                  !selected && correct && "border-emerald-300 bg-emerald-50/60",
-                                  !selected && !correct && "border-slate-200 bg-white"
-                                )}
-                              >
-                                <div className="font-medium text-slate-900">{option}</div>
-                                <div className="mt-1 text-slate-700"><RichText text={question.options[option]} /></div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        {question.explanation ? (
-                          <div className="rounded-sm border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                            <div className="font-medium text-slate-900">Explanation</div>
-                            <div className="mt-2"><RichText text={question.explanation} /></div>
-                          </div>
-                        ) : null}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            ) : null}
-
-            <div className="flex gap-2">
-              <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={resetQuiz}>Set up another quiz</Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-slate-200 bg-white px-4 py-3 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-        <div className="text-sm text-slate-600">
-          Student: <span className="font-medium text-slate-900">{studentName || "Unnamed student"}</span>
-          {studentEmail ? <span className="text-slate-500"> · {studentEmail}</span> : null}
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="min-w-[220px] text-sm text-slate-600">
-            <div className="mb-1 flex items-center justify-between">
-              <span>Progress</span>
-              <span>{currentIndex + 1}/{quizQuestions.length}</span>
-            </div>
-            <Progress value={((currentIndex + 1) / quizQuestions.length) * 100} />
-          </div>
-          <Badge variant="outline">{Math.floor(elapsedSeconds / 60)}m {String(elapsedSeconds % 60).padStart(2, "0")}s</Badge>
-        </div>
-      </div>
-
-      {currentQuestion ? (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
-          <Card className="rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-            <CardHeader className="space-y-3 border-b border-slate-100 pb-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline">Question {currentIndex + 1} of {quizQuestions.length}</Badge>
-                <Badge variant="secondary">{currentQuestion.difficulty}</Badge>
-              </div>
-              <CardTitle className="text-2xl leading-tight md:text-[1.9rem]">{currentQuestion.subtopic}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8 pt-6">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-6 text-slate-900 shadow-sm md:px-8 md:py-8">
-                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Question</div>
-                <div className="max-w-none text-slate-900">
-                  <RichText text={currentQuestion.stem} className="block text-[1.4rem] leading-10 md:text-[1.8rem] md:leading-[2.9rem]" />
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                {(currentQuestion.optionOrder ?? (["A", "B", "C", "D"] as OptionKey[])).map((option) => {
-                  const selected = answersByQuestion[currentQuestion.id]?.selected === option;
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => selectAnswer(option)}
-                      className={cn(
-                        "rounded-2xl border px-5 py-5 text-left transition-all md:px-6 md:py-6",
-                        selected
-                          ? "border-slate-900 bg-slate-900 text-white shadow-[0_10px_22px_rgba(15,23,42,0.18)]"
-                          : "border-slate-300 bg-white text-slate-800 hover:border-slate-400 hover:bg-slate-50"
-                      )}
-                    >
-                      <div className="max-w-none text-[1.02rem] leading-8 md:text-[1.15rem] md:leading-9">
-                        <RichText text={currentQuestion.options[option]} className={selected ? "text-white" : "text-slate-700"} />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => goToQuestion(Math.max(0, currentIndex - 1))} disabled={currentIndex === 0}>Previous</Button>
-                  <Button variant="outline" onClick={() => goToQuestion(Math.min(quizQuestions.length - 1, currentIndex + 1))} disabled={currentIndex === quizQuestions.length - 1}>Next</Button>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={resetQuiz}>Cancel quiz</Button>
-                  <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => setShowSubmitConfirm(true)} disabled={submitting}>
-                    {submitting ? "Submitting..." : "Submit quiz"}
-                  </Button>
-                </div>
-              </div>
-
-              {showSubmitConfirm ? (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                  <div className="font-semibold text-amber-950">Confirm submission</div>
-                  <div className="mt-2">Are you sure you want to submit this quiz? You will not be able to change your answers after submitting.</div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Button className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => void submitQuiz()} disabled={submitting}>
-                      {submitting ? "Submitting..." : "Yes, submit quiz"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setShowSubmitConfirm(false)} disabled={submitting}>Go back</Button>
-                  </div>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-        </motion.div>
-      ) : null}
-    </div>
-  );
-}
-
-export default function App() {
-  const [role, setRole] = useState<Role>("student");
-  const [parentUnlocked, setParentUnlocked] = useState(false);
-  const [parentAccessCodeInput, setParentAccessCodeInput] = useState("");
-  const [teacherUnlocked, setTeacherUnlocked] = useState(false);
-  const [teacherPasswordInput, setTeacherPasswordInput] = useState("");
-
-  useEffect(() => {
-    setTeacherUnlocked(restoreTeacherUnlocked());
-  }, []);
-
-  function unlockParentView() {
-    if (parentAccessCodeInput !== EFFECTIVE_PARENT_ACCESS_CODE) {
-      window.alert("That parent access code is not correct.");
-      return;
+    function renderAttempts(attempts, editable) {
+      if (!attempts.length) return `<p class="note">No matching quiz attempts found.</p>`;
+      const total = attempts.length;
+      const average = Math.round(attempts.reduce((sum, a) => sum + (a.percentage || 0), 0) / total);
+      const best = Math.max(...attempts.map(a => a.percentage || 0));
+      return `<div class="grid three" style="margin-bottom:18px"><div class="stat"><small>Completed quizzes</small><strong>${total}</strong></div><div class="stat"><small>Average score</small><strong>${average}%</strong></div><div class="stat"><small>Best score</small><strong>${best}%</strong></div></div>${attempts.map(a => `<article class="card attempt-card"><div class="card-header"><div class="row" style="justify-content:space-between"><div><h3>${escapeHtml(a.studentName || 'Student')}</h3><p class="desc">${escapeHtml(a.studentEmail || 'No email saved')}${a.schoolName ? ' · ' + escapeHtml(a.schoolName) : ''}${a.submittedAt ? ' · Submitted ' + new Date(a.submittedAt).toLocaleString() : ''}</p></div><div class="row"><span class="badge dark">${escapeHtml(a.mode)}</span><span class="badge green">${a.percentage}%</span><span class="badge ${a.integrityEvents?.length ? 'red' : ''}">${a.integrityEvents?.length || 0} flags</span></div></div></div><div class="card-content"><div class="grid three"><div class="stat"><small>Score</small><strong>${a.score}/${a.scoredQuestionCount || a.questionCount}</strong></div><div class="stat"><small>Questions</small><strong>${a.questionCount}</strong></div><div class="stat"><small>Duration</small><strong>${a.durationMinutes}m</strong></div></div><p class="note" style="margin-top:14px"><strong>Topics:</strong> ${escapeHtml((a.selectedTopics || []).join(', ') || 'No topics saved')}</p>${a.integrityEvents?.length ? `<div class="note warn" style="margin-top:14px"><strong>Integrity notes</strong><br>${a.integrityEvents.map(e => `• ${escapeHtml((e.type || '').replaceAll('_', ' '))} — ${escapeHtml(e.details || '')}`).join('<br>')}</div>` : ''}<div class="note good" style="margin-top:14px"><strong>Teacher feedback</strong><br>${escapeHtml(a.teacherFeedback || 'No teacher feedback has been added yet.')}</div>${editable ? `<div class="field" style="margin-top:14px"><label>Edit feedback</label><textarea data-feedback-for="${a.id}">${escapeHtml(a.teacherFeedback || '')}</textarea></div><button class="btn primary save-feedback" data-attempt-id="${a.id}">Save feedback</button>` : ''}</div></article>`).join('')}`;
     }
-    setParentUnlocked(true);
-  }
 
-  function leaveParentView() {
-    setParentAccessCodeInput("");
-    setParentUnlocked(false);
-    setRole("student");
-  }
-
-  function unlockTeacherView() {
-    if (teacherPasswordInput !== EFFECTIVE_TEACHER_PASSWORD) {
-      window.alert("That teacher password is not correct.");
-      return;
+    function exportAttempts() {
+      const blob = new Blob([JSON.stringify(readAttempts(), null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url; link.download = `csec-addmaths-attempts-${new Date().toISOString().slice(0,10)}.json`;
+      link.click(); URL.revokeObjectURL(url);
     }
-    setTeacherUnlocked(true);
-    persistTeacherUnlocked(true);
-  }
+    function importAttempts(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const incoming = JSON.parse(String(reader.result));
+          if (!Array.isArray(incoming)) throw new Error('Expected an array of attempts.');
+          const merged = [...incoming, ...readAttempts()].reduce((map, attempt) => map.set(attempt.id || id(), attempt), new Map());
+          writeAttempts([...merged.values()].sort((a,b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0)));
+          alert('Attempts imported.'); renderTeacher();
+        } catch (error) { alert('Could not import that JSON file.'); }
+      };
+      reader.readAsText(file);
+    }
 
-  function leaveTeacherView() {
-    setTeacherPasswordInput("");
-    setTeacherUnlocked(false);
-    persistTeacherUnlocked(false);
-    setRole("student");
-  }
-
-  return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#1f3a8a_0%,#253b9f_45%,#2f3a97_100%)] px-4 py-6 text-slate-900 md:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-          <div className="overflow-hidden rounded-[28px] border border-white/10 bg-transparent text-white">
-            <div className="px-6 pt-8 pb-6 text-center md:px-10">
-              <div className="text-sm uppercase tracking-[0.35em] text-white/80">Student Assessment Portal</div>
-              <h1 className="mt-4 text-4xl font-black tracking-tight md:text-6xl">CSEC Additional Mathematics</h1>
-              <p className="mt-4 text-xl text-white/90 md:text-2xl">Multiple Choice Questions</p>
-              <div className="relative z-10 mt-8 flex flex-wrap justify-center gap-2">
-                <Button variant={role === "student" ? "default" : "outline"} className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => setRole("student")}>Student view</Button>
-                <Button variant={role === "parent" ? "default" : "outline"} className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => setRole("parent")}>Parent view</Button>
-                {parentUnlocked && role === "parent" ? (
-                  <Button variant="secondary" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={leaveParentView}>Lock parent view</Button>
-                ) : null}
-                <Button variant={role === "teacher" ? "default" : "outline"} className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={() => setRole("teacher")}>Teacher view</Button>
-                {teacherUnlocked && role === "teacher" ? (
-                  <Button variant="secondary" className="rounded-md shadow-[0_6px_14px_rgba(15,23,42,0.16)]" onClick={leaveTeacherView}>Lock teacher view</Button>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {role === "student" ? (
-          <StudentPanel />
-        ) : role === "parent" ? (
-          parentUnlocked ? (
-            <ParentPanel />
-          ) : (
-            <ParentAccessGate
-              code={parentAccessCodeInput}
-              onCodeChange={setParentAccessCodeInput}
-              onUnlock={unlockParentView}
-              onBack={() => {
-                setParentAccessCodeInput("");
-                setRole("student");
-              }}
-            />
-          )
-        ) : teacherUnlocked ? (
-          <TeacherPanel />
-        ) : (
-          <TeacherAccessGate
-            password={teacherPasswordInput}
-            onPasswordChange={setTeacherPasswordInput}
-            onUnlock={unlockTeacherView}
-            onBack={() => {
-              setTeacherPasswordInput("");
-              setRole("student");
-            }}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-role-button]');
+      if (button) setRole(button.dataset.roleButton);
+    });
+    setRole('student');
+  </script>
+</body>
+</html>
