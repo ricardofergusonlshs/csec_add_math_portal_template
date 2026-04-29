@@ -353,7 +353,7 @@ IV. k = −√17`, "I or II only", "I or III only", "I or IV only", "II or IV on
     const STORAGE_TEACHER = 'csec-addmaths-static-teacher-unlocked';
     const STORAGE_FLOW_URL = 'csec-addmaths-record-sync-url';
     const STORAGE_FLOW_URL_DISABLED = 'csec-addmaths-record-sync-url-disabled';
-    const DEFAULT_RECORD_SYNC_URL = ''; // Optional record sync endpoint can be added from the teacher dashboard.
+    const const DEFAULT_RECORD_SYNC_URL = 'https://default4637e720864b4700b2707cab63af0c.30.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ca4750743180420a9ae2cc1192a10801/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=S8Q9vmOv1OfhqI56dDqCJ7RPc02jscDbdBZcm8sPnj4';
     const decodeAccessValue = (value) => atob(value);
     const PARENT_CODE = decodeAccessValue('cGFyZW50MjAyNg==');
     const TEACHER_CODE = decodeAccessValue('bWF0aGVtYXRpY3MyMDI2');
